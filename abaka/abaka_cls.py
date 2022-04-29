@@ -1,6 +1,7 @@
 from collections import defaultdict
 import codecs
 
+
 class Player:
     def __init__(self, acc_id, team_name):
         self.acc_id = acc_id
