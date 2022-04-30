@@ -34,14 +34,16 @@ class Team:
     def __str__(self):
         return f'{self.team_name}-{len(self.players)}'
 
-    def start_game(self, game):
+    def start_game(self, game: GameKarusel):
         if self.active_tour is not None:
             return False, "Нельзя учавствовать в двух играх одновременно"
         self.active_tour = game
         self.problem_number = 0
-        return True, f"Теперь команда {self} учавствует в игре {game}"
+        return True, f"Теперь команда {self} учавствует в игре {game.name}"
 
     def sent_tasks(self):
+        if len(self.given_answers) == 0:
+            return "Вы ещё не дали ни одного ответа\n"
         res = ""
         for i in range(len(self.given_answers)):
             res += f'{i + 1}) {self.given_answers[i]}\n'
@@ -51,18 +53,27 @@ class Team:
         return True, self.total_points
 
     def solve(self, ans):
+        if self.problem_number >= len(self.active_tour.answers):
+            return False, "Вы уже дали ответ на все задачи"
+
         self.given_answers.append(ans)
         if ans == self.active_tour.answers[self.problem_number]:
             self.total_points += self.cur_reward
             self.cur_reward += 3
             self.problem_number += 1
+            if self.problem_number >= len(self.active_tour.answers):
+                return True, f"Ответ верный! Ваш текущий рейтинг: {self.total_points}, " \
+                         f"это была последняя задача. Спасибо за участие!"
             return True, f"Ответ верный! Ваш текущий рейтинг: {self.total_points}, " \
-                         f"награда за следующую задачу: {self.cur_reward}"
+                         f"награда за следующую задачу ({self.problem_number + 1} задача): {self.cur_reward}"
         else:
             self.cur_reward = max(self.cur_reward - 3, 3)
             self.problem_number += 1
+            if self.problem_number >= len(self.active_tour.answers):
+                return True, f"Ответ неверный! Ваш текущий рейтинг: {self.total_points}, " \
+                         f"это была последняя задача. Спасибо за участие!"
             return True, f"Ответ неверный! Ваш текущий рейтинг: {self.total_points}, " \
-                         f"награда за следующую задачу: {self.cur_reward}"
+                         f"награда за следующую задачу ({self.problem_number + 1} задача): {self.cur_reward}"
 
     def add_player(self, player: Player):
         self.players.append(player)
@@ -100,14 +111,17 @@ class StateMachine:
         if player_id not in self.players:
             return False, "Нет такого игрока"
 
-        is_ok, msg = self.players[player_id].team.start_game(tour_name)
+        is_ok, msg = self.players[player_id].team.start_game(self.tours[tour_name])
         return is_ok, msg
 
-    def solve(self, player_id, ans):
+    def solve(self, player_id, *parts):
         if player_id not in self.players:
             return False, "Нет такого игрока"
 
-        is_ok, msg = self.players[player_id].team.solve(ans)
+        if len(parts) != 1:
+            return False, "Неверный формат ответа. Ответ должен иметь такой вид: '!solve ANSWER'"
+
+        is_ok, msg = self.players[player_id].team.solve(parts[0])
         return is_ok, msg
 
     def tasks(self, player_id):
@@ -120,7 +134,7 @@ class StateMachine:
     def sent_task(self, player_id):
         if player_id not in self.players:
             return False, "Нет такого игрока"
-        if self.players[player_id].current_tour is None:
+        if self.players[player_id].team.active_tour is None:
             return False, "Вы нигде не играете"
         return True, self.players[player_id].team.sent_tasks()
 

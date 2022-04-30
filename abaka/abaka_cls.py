@@ -170,17 +170,22 @@ class StateMachine:
         ok, msg = self.players[player_id].join_tour(tour_name, self.tours[tour_name].get_tour_info())
         return ok, msg
 
-    def solve(self, player_id, theme, idd, sol):
+    def solve(self, player_id, *parts):
         if player_id not in self.players:
-            return (False, "Нет такого игрока")
+            return False, "Нет такого игрока"
+
+        if len(parts) != 3:
+            return False, "Неверный формат ответа. Решение должно быть в виде 'solve ТЕМА ЗАДАЧА ОТВЕТ'"
+
+        theme, idd, sol = parts
 
         ok, msg = self.players[player_id].can_try_solve_task(theme, idd)
         if not ok:
-            return (ok, msg)
+            return ok, msg
 
         ok, status, msg = self.tours[self.players[player_id].current_tour].try_solve_task(theme, idd, sol)
         if not ok:
-            return (ok, msg)
+            return ok, msg
 
         self.players[player_id].add_solution(theme, idd, status)
         if status:
@@ -190,7 +195,7 @@ class StateMachine:
                 self.players[player_id].add_bonus(p)
 
         ok, new_p = self.players[player_id].my_point()
-        return (True, msg + " Теперь у вас {}".format(new_p))
+        return True, msg + " Теперь у вас {}".format(new_p)
 
     def tasks(self, player_id):
         if player_id not in self.players:
