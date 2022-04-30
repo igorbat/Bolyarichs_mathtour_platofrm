@@ -6,7 +6,8 @@ from abaka.data.tasks_5_weak import *
 from abaka.data.tasks_8_strong import *
 from abaka.data.tasks_8_weak import *
 
-from karusel.karusel_game import StateMachine, GameKarusel
+from karusel.state_machine import StateMachine
+from karusel.karusel_game import GameKarusel
 
 
 client = discord.Client()
