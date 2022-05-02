@@ -15,6 +15,7 @@ class StateMachine:
         value is the object of class GameKarusel
         self.teams - a dict of all teams. Key is the name of the team,
         value is the object of class Team
+        self.cnt_of_the_team_name - a dict that helps to understand how many people has the same team name
 
     Methods:
         self.add_tour(tour_name: str, game: GameKarusel) - adds a particular tour
@@ -34,6 +35,7 @@ class StateMachine:
         self.players: dict[str, Player] = {}
         self.tours: dict[str, GameKarusel] = {}
         self.teams: dict[str, Team] = {}
+        self.cnt_of_the_team_name: dict[str, int] = {}
 
     def add_tour(self, tour_name, game):
         self.tours[tour_name] = game
@@ -44,10 +46,14 @@ class StateMachine:
 
         player = Player(player_id)
 
-        if team_name not in self.teams:
+        if team_name not in self.cnt_of_the_team_name:
+            self.cnt_of_the_team_name[team_name] = 1
+            team_name += f'-{self.cnt_of_the_team_name[team_name]}'
             self.teams[team_name] = Team(team_name, player)
         else:
-            self.teams[team_name].add_player(player)
+            self.cnt_of_the_team_name[team_name] += 1
+            team_name += f'-{self.cnt_of_the_team_name[team_name]}'
+            self.teams[team_name] = Team(team_name, player)
 
         player.set_team(self.teams[team_name])
         self.players[player_id] = player

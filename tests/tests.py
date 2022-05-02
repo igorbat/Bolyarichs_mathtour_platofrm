@@ -2,19 +2,19 @@ from abaka.abaka_cls import *
 import unittest
 
 
-class TestSolve(unittest.TestCase):
+class TestSolveAbaka(unittest.TestCase):
     def get_player1(self):
         pl = Player(1, "1s")
         return pl
 
     def get_1t(self):
-        tour_1t = GameAbaka("1t", "link", [["1",["1"],["1"]],
-                                           ["2",["1"],["1"]]])
+        tour_1t = GameAbaka("1t", "link", [["1", ["1"], ["1"]],
+                                           ["2", ["1"], ["1"]]])
         return tour_1t
 
     def test_solve(self):
         sm = StateMachine()
-        sm.register_player("1", "1", "ls")
+        sm.register_player("1", "1")
         sm.add_tour("1t", self.get_1t())
         sm.join_tour("1", "1t")
         sm.solve("1", "1", "1", "1")
@@ -25,7 +25,7 @@ class TestSolve(unittest.TestCase):
 
         self.assertEqual(sm.players["1"].tours["1t"][4], 10 + 20 + 50 * 2)
 
-        sm.register_player("2", "1", "ls")
+        sm.register_player("2", "1")
         sm.join_tour("2", "1t")
         sm.solve("2", "1", "1", "1")
 
@@ -37,7 +37,7 @@ class TestSolve(unittest.TestCase):
 
         sm.solve("2", "2", "1", "1")
 
-        self.assertEqual(sm.players["2"].tours["1t"][4], 10 + 20 + 50 + 10 + 10*2)
+        self.assertEqual(sm.players["2"].tours["1t"][4], 10 + 20 + 50 + 10 + 10 * 2)
 
         ok, msg = sm.solve("2", "2", "2", "1")
 
@@ -46,9 +46,9 @@ class TestSolve(unittest.TestCase):
 
     def test_sort(self):
         sm = StateMachine()
-        sm.register_player("1", "1", "1s")
-        sm.register_player("2", "2", "2s")
-        sm.register_player("3", "3", "3s")
+        sm.register_player("1", "1")
+        sm.register_player("2", "2")
+        sm.register_player("3", "3")
         sm.add_tour("1t", GameAbaka("1t", "link", [["1", ["1"], ["1"]], ["2", ["1"], ["1"]]]))
         sm.add_tour("2t", GameAbaka("2t", "link", [["1", ["1"], ["1"]], ["2", ["1"], ["1"]]]))
 
@@ -80,3 +80,22 @@ class TestSolve(unittest.TestCase):
                 self.assertEqual(vll[1][1][0], "2_2s-1")
                 self.assertEqual(vll[1][2][0], "3_3s-1")
         sm.reload_res()
+
+
+class TestSolveKarusel(unittest.TestCase):
+    def get_player1(self):
+        pass
+
+    def get_1t(self):
+        pass
+
+    def test_solve(self):
+        pass
+
+    def test_sort(self):
+        pass
+
+
+ts = TestSolveAbaka()
+ts.test_solve()
+ts.test_sort()

@@ -30,7 +30,7 @@ class Team:
         self.given_answers = []
 
     def __str__(self):
-        return f'{self.team_name}-{len(self.players)}'
+        return f'{self.team_name}'
 
     def start_game(self, game):
         if self.active_tour is not None:
