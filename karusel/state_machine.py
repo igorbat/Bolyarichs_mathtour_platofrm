@@ -67,8 +67,8 @@ class StateMachine:
         if player_id not in self.players:
             return False, "Нет такого игрока"
 
-        is_ok, msg = self.players[player_id].team.start_game(self.tours[tour_name])
-        return is_ok, msg
+        ok, msg = self.players[player_id].team.start_game(self.tours[tour_name])
+        return ok, msg
 
     def solve(self, player_id, *parts):
         if player_id not in self.players:
@@ -80,8 +80,8 @@ class StateMachine:
         if self.players[player_id].team.active_tour is None:
             return False, "Игрок не участвует ни в одном соревновании"
 
-        is_ok, msg = self.players[player_id].team.solve(parts[0])
-        return is_ok, msg
+        ok, msg = self.players[player_id].team.solve(parts[0])
+        return ok, msg
 
     def tasks(self, player_id):
         if player_id not in self.players:
@@ -100,8 +100,8 @@ class StateMachine:
     def points(self, player_id):
         if player_id not in self.players:
             return False, "Нет такого игрока"
-        is_ok, msg = self.players[player_id].team.get_points()
-        return is_ok, msg
+        ok, msg = self.players[player_id].team.get_points()
+        return ok, msg
 
     def get_sorted_res(self):
         if len(self.teams.values()) == 0:
