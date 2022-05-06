@@ -1,3 +1,6 @@
+from karusel.conf import *
+
+
 class Team:
     """
     Class representing a group of people who participate in a tour
@@ -25,7 +28,7 @@ class Team:
         self.active_tour = None
         self.players = list(players)
         self.problem_number = 0
-        self.cur_reward = 3
+        self.cur_reward = INITIAL_REWARD
         self.total_points = 0
         self.given_answers = []
 
@@ -57,7 +60,7 @@ class Team:
         self.given_answers.append(ans)
         if ans == self.active_tour.answers[self.problem_number]:
             self.total_points += self.cur_reward
-            self.cur_reward += 3
+            self.cur_reward += REWARD_FOR_RIGHT_ANSWER
             self.problem_number += 1
             if self.problem_number >= len(self.active_tour.answers):
                 return True, f"Ответ верный! Ваш текущий рейтинг: {self.total_points}, " \
@@ -65,7 +68,7 @@ class Team:
             return True, f"Ответ верный! Ваш текущий рейтинг: {self.total_points}, " \
                          f"награда за следующую задачу ({self.problem_number + 1} задача): {self.cur_reward}"
         else:
-            self.cur_reward = max(self.cur_reward - 3, 3)
+            self.cur_reward = max(self.cur_reward + REWARD_FOR_WRONG_ANSWER, 3)
             self.problem_number += 1
             if self.problem_number >= len(self.active_tour.answers):
                 return True, f"Ответ неверный! Ваш текущий рейтинг: {self.total_points}, " \

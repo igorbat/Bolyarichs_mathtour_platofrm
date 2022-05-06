@@ -10,7 +10,7 @@ class TestSolveAbaka(unittest.TestCase):
 
     def get_1t(self):
         tour_1t = abaka_cls.GameAbaka("1t", "link", [["1", ["1"], ["1"]],
-                                           ["2", ["1"], ["1"]]])
+                                                     ["2", ["1"], ["1"]]])
         return tour_1t
 
     def test_solve(self):
@@ -103,7 +103,7 @@ class TestSolveKarusel(unittest.TestCase):
 
         sm.solve("1", "0")
 
-        self.assertEqual(sm.players["1"].team.total_points, 9)
+        self.assertEqual(sm.players["1"].team.total_points, 7)
 
         sm.register_player("2", "1")
         sm.join_tour("2", "1t")
@@ -121,12 +121,16 @@ class TestSolveKarusel(unittest.TestCase):
 
         ok, msg = sm.solve("2", "5")
 
-        self.assertEqual(sm.players["2"].team.total_points, 12)
+        self.assertEqual(sm.players["2"].team.total_points, 10)
 
     def test_sort(self):
-            pass
+        pass
 
 
-ts = TestSolveKarusel()
-ts.test_solve()
-ts.test_sort()
+ts_karusel = TestSolveKarusel()
+ts_karusel.test_solve()
+ts_karusel.test_sort()
+
+ts_abaka = TestSolveAbaka()
+ts_abaka.test_solve()
+ts_abaka.test_sort()

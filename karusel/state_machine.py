@@ -48,11 +48,11 @@ class StateMachine:
 
         if team_name not in self.cnt_of_the_team_name:
             self.cnt_of_the_team_name[team_name] = 1
-            team_name += f'-{self.cnt_of_the_team_name[team_name]}'
+            team_name += f"-{self.cnt_of_the_team_name[team_name]}"
             self.teams[team_name] = Team(team_name, player)
         else:
             self.cnt_of_the_team_name[team_name] += 1
-            team_name += f'-{self.cnt_of_the_team_name[team_name]}'
+            team_name += f"-{self.cnt_of_the_team_name[team_name]}"
             self.teams[team_name] = Team(team_name, player)
 
         player.set_team(self.teams[team_name])

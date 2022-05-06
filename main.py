@@ -9,16 +9,15 @@ from abaka.data.tasks_8_weak import *
 from karusel.state_machine import StateMachine
 from karusel.karusel_game import GameKarusel
 
-
 client = discord.Client()
 bot = commands.Bot(command_prefix='!')
 state_machine = StateMachine()
 
-
 karusel_test = GameKarusel("test",
                            "https://docs.google.com/document/d/1VlLj1B6JeLmsBeVtijxZNSb5KWbF4nHI-uD7-zvZnwQ/edit?usp=sharing",
-                           ['1', '0', '0', '5', '0', '0'])
+                           ["1", "0", "0", "5", "0", "0"])
 state_machine.add_tour("test", karusel_test)
+
 
 # game_test = \
 #     GameAbaka("test",
