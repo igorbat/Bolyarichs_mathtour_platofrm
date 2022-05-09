@@ -52,6 +52,11 @@ state_machine.add_tour("test", karusel_test)
 # state_machine.add_tour("novice_8", game_weak_8)
 
 
+@bot.check
+def check(ctx):
+    return ctx.guild is None
+
+
 @bot.command(name='register', help='зарегистрировать команду: школа, класс или целиком название')
 async def register(ctx):
     print(ctx.author.id, ctx.author.name, ctx.message.content)
