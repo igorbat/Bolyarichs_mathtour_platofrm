@@ -60,6 +60,20 @@ class StateMachine:
 
         return str(player.team)
 
+    def start_tour(self, tour_name):
+        if tour_name in self.tours:
+            ok, msg = self.tours[tour_name].start()
+        else:
+            ok, msg = False, "Нет такого турнира"
+        return ok, msg
+
+    def stop_tour(self, tour_name):
+        if tour_name in self.tours:
+            ok, msg = self.tours[tour_name].stop()
+        else:
+            ok, msg = False, "Нет такого турнира"
+        return ok, msg
+
     def join_tour(self, player_id, tour_name):
         if tour_name not in self.tours:
             return False, "Нет такого турнира"
@@ -67,6 +81,8 @@ class StateMachine:
         if player_id not in self.players:
             return False, "Нет такого игрока"
 
+        if not self.tours[tour_name].active:
+            return False, "Турнир отключен"
         ok, msg = self.players[player_id].team.start_game(self.tours[tour_name])
         return ok, msg
 
@@ -80,6 +96,9 @@ class StateMachine:
         if self.players[player_id].team.active_tour is None:
             return False, "Игрок не участвует ни в одном соревновании"
 
+        if not self.players[player_id].team.active_tour.active:
+            return False, "Турнир отключен"
+
         ok, msg = self.players[player_id].team.solve(parts[0])
         return ok, msg
 
@@ -88,7 +107,9 @@ class StateMachine:
             return False, "Нет такого игрока"
         if self.players[player_id].team.active_tour is None:
             return False, "Вы нигде не играете"
-        return True, self.players[player_id].team.active_tour.get_tasks()
+        if not self.players[player_id].team.active_tour.active:
+            return False, "Турнир отключен"
+        return self.players[player_id].team.active_tour.get_tasks()
 
     def sent_task(self, player_id):
         if player_id not in self.players:

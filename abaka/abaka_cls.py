@@ -110,11 +110,21 @@ class GameAbaka:
                 self.solutions[theme + "_" + str(idd)] = sol
                 idd += 1
 
+        self.active = False
+
     def get_name(self):
         return self.name
 
     def get_tour_info(self):
         return (self.themes, self.task_count)
+
+    def start(self):
+        self.active = True
+        return (True, "Игра началась")
+
+    def stop(self):
+        self.active = False
+        return (True, "Игра отключена")
 
     def get_tasks(self):
         return self.link
@@ -145,6 +155,20 @@ class StateMachine:
     def add_tour(self, tour_name, game):
         self.tours[tour_name] = game
 
+    def start_tour(self, tour_name):
+        if tour_name not in self.tours:
+            return (False, "Нет такого турнира")
+
+        ok, msg = self.tours[tour_name].start()
+        return ok, msg
+
+    def stop_tour(self, tour_name):
+        if tour_name not in self.tours:
+            return (False, "Нет такого турнира")
+
+        ok, msg = self.tours[tour_name].stop()
+        return ok, msg
+
     def register_player(self, player_id, team_name):
         if player_id in self.players:
             return "У вас уже есть команда: {}".format(self.players[player_id].team_name)
@@ -167,6 +191,8 @@ class StateMachine:
         if player_id not in self.players:
             return (False, "Нет такого игрока")
 
+        if not self.tours[tour_name].active:
+            return (False, "Турник отключен")
         ok, msg = self.players[player_id].join_tour(tour_name, self.tours[tour_name].get_tour_info())
         return ok, msg
 
@@ -182,6 +208,9 @@ class StateMachine:
         ok, msg = self.players[player_id].can_try_solve_task(theme, idd)
         if not ok:
             return ok, msg
+
+        if not self.tours[self.players[player_id].current_tour].active:
+            return (False, "Турник отключен")
 
         ok, status, msg = self.tours[self.players[player_id].current_tour].try_solve_task(theme, idd, sol)
         if not ok:
@@ -202,6 +231,8 @@ class StateMachine:
             return (False, "Нет такого игрока")
         if self.players[player_id].current_tour is None:
             return (False, "Вы нигде не играете")
+        if not self.tours[self.players[player_id].current_tour].active:
+            return (False, "Турник отключен")
         return (True, self.tours[self.players[player_id].current_tour].get_tasks())
 
     def sent_task(self, player_id):
@@ -209,6 +240,8 @@ class StateMachine:
             return (False, "Нет такого игрока")
         if self.players[player_id].current_tour is None:
             return (False, "Вы нигде не играете")
+        if not self.tours[self.players[player_id].current_tour].active:
+            return (False, "Турник отключен")
         return (True, self.tours[self.players[player_id].current_tour].sent_tasks())
 
     def points(self, player_id):

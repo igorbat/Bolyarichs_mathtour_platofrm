@@ -17,6 +17,7 @@ class TestSolveAbaka(unittest.TestCase):
         sm = abaka_cls.StateMachine()
         sm.register_player("1", "1")
         sm.add_tour("1t", self.get_1t())
+        sm.start_tour("1t")
         sm.join_tour("1", "1t")
         sm.solve("1", "1", "1", "1")
 
@@ -52,6 +53,9 @@ class TestSolveAbaka(unittest.TestCase):
         sm.register_player("3", "3")
         sm.add_tour("1t", abaka_cls.GameAbaka("1t", "link", [["1", ["1"], ["1"]], ["2", ["1"], ["1"]]]))
         sm.add_tour("2t", abaka_cls.GameAbaka("2t", "link", [["1", ["1"], ["1"]], ["2", ["1"], ["1"]]]))
+
+        sm.start_tour("1t")
+        sm.start_tour("2t")
 
         sm.join_tour("1", "2t")
         sm.join_tour("2", "2t")
@@ -96,6 +100,9 @@ class TestSolveKarusel(unittest.TestCase):
         sm = state_machine.StateMachine()
         sm.register_player("1", "1")
         sm.add_tour("1t", self.get_1t())
+
+        sm.start_tour("1t")
+
         sm.join_tour("1", "1t")
         sm.solve("1", "1")
 
