@@ -17,9 +17,18 @@ class GameKarusel:
         self.link = link
         self.tasks_amount = len(answers)
         self.answers = answers
+        self.active = False
 
     def get_name(self):
         return self.name
 
     def get_tasks(self):
         return self.link
+
+    def start(self):
+        self.active = True
+        return (True, "Игра началась")
+
+    def stop(self):
+        self.active = False
+        return (True, "Игра отключена")
