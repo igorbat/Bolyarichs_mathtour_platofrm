@@ -178,6 +178,14 @@ async def res_res_res(ctx):
     await ctx.send(msg)
 
 
+@bot.command(name='res', help='Получить результаты')
+async def res_res_res(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    _, msg = state_machine.get_text_res()
+    print(msg)
+    await ctx.send(msg)
+
+
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
