@@ -284,3 +284,20 @@ class StateMachine:
                 excess_bonuses = [bns for bns in self.tours[name].bonuses if bns not in self.tours[name].taken_bonuses]
                 f.write("<div><pre>Оставшиеся первые бонусы для всех! {}</pre></div>".format(excess_bonuses))
                 f.write("</body></html>")
+
+    def get_text_res(self):
+        sorted_res = self.get_sorted_res()
+
+        msg = ''
+        for v in sorted_res:
+            name, mas = v
+            msg += 'ТУРНИР ' + name + '\n'
+            msg = 'очков задач посылок место название\n'
+            for _, mass in enumerate(mas):
+                msg += \
+                    str(mass[1]).ljust(6, " ") + str(len(mass[2])).ljust(6, " ") +\
+                    str(len(mass[3])).ljust(8, " ") + str(_ + 1).ljust(6, " ") + mass[0] + "\n"
+                excess_bonuses = [bns for bns in self.tours[name].bonuses if bns not in self.tours[name].taken_bonuses]
+                msg += 'Оставшиеся первые бонусы для всех! {}\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n'.format(excess_bonuses)
+
+        return (True, msg)
