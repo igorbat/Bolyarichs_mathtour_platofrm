@@ -2,13 +2,8 @@ import discord
 from secret import TOKEN, ADMINS
 from discord.ext import commands
 from abaka.data.tasks_5_strong import *
-from abaka.data.tasks_5_weak import *
-from abaka.data.tasks_8_strong import *
-from abaka.data.tasks_8_weak import *
 
 import abaka.abaka_cls
-from karusel.state_machine import StateMachine
-from karusel.karusel_game import GameKarusel
 
 ADMIN_COMMANDS = ['!start', '!stop']
 
@@ -33,8 +28,8 @@ state_machine = abaka.abaka_cls.StateMachine()
 #
 game_strong_5 = \
     abaka.abaka_cls.GameAbaka("pro_5",
-              "https://drive.google.com/file/d/1Aw00bK3RMkRLVxQPVVUnTMzpNe3wihFV/view?usp=sharing",
-              TASKS_5_STRONG)
+                              "https://drive.google.com/drive/u/0/folders/1WiQPRyU7NN5T_xZa0PmAGFctYIQ8-8Ij",
+                              TASKS_5_STRONG)
 state_machine.add_tour("pro_5", game_strong_5)
 
 # game_weak_5 = \
