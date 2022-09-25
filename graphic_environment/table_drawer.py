@@ -1,13 +1,13 @@
 from PIL import Image, ImageDraw, ImageFont
 from conf import PATH, user_path
-from conf import OUTLINE_WIDTH, INLINE_WIDTH
+from conf import OUTLINE_WIDTH, INLINE_WIDTH, SMALLEST_STRING
 from conf import C_RED, C_GREEN, C_GREY
 from conf import RED_TAGS, GREEN_TAGS, GREY_TAGS
 
 
 class TableDrawer:
     @staticmethod
-    def draw_table(board, font_size, board_color=None):
+    def draw_table(board, font_size, color_matrix=None, empty_matrix=None):
         # PATH is defined in project, user_path is user's path to project directory
         path = user_path + PATH
 
@@ -34,7 +34,6 @@ class TableDrawer:
 
         # inlines
         start_pix = OUTLINE_WIDTH - int((INLINE_WIDTH + 1) / 2)
-        print(start_pix)
         shift = 0
         for x in range(x_size - 1):
             shift += params[0][x] + INLINE_WIDTH
@@ -46,7 +45,9 @@ class TableDrawer:
         # endregion
 
         # region coloring cells if board_color is not None
-        if board_color is not None:
+        if color_matrix is not None:
+            if color_matrix == 'default':
+                color_matrix = TableDrawer.create_default_color_matrix(board)
             start_pix = OUTLINE_WIDTH
             shift_x = 0
             shift_y = 0
@@ -54,17 +55,24 @@ class TableDrawer:
                 shift_y = 0
                 for y in range(y_size):
                     seed = (start_pix + shift_x, start_pix + shift_y)
-                    if board_color[y][x] in GREY_TAGS:
-                        ImageDraw.floodfill(img, seed, C_GREY)
-                    if board_color[y][x] in GREEN_TAGS:
-                        ImageDraw.floodfill(img, seed, C_GREEN)
-                    if board_color[y][x] in RED_TAGS:
-                        ImageDraw.floodfill(img, seed, C_RED)
                     shift_y += params[1][y] + INLINE_WIDTH
+                    if (color_matrix[y][x] is tuple) and (len(color_matrix[y][x]) == 3):
+                        ImageDraw.floodfill(img, seed, color_matrix[y][x])
+                        continue
+                    if color_matrix[y][x] in GREY_TAGS:
+                        ImageDraw.floodfill(img, seed, C_GREY)
+                    if color_matrix[y][x] in GREEN_TAGS:
+                        ImageDraw.floodfill(img, seed, C_GREEN)
+                    if color_matrix[y][x] in RED_TAGS:
+                        ImageDraw.floodfill(img, seed, C_RED)
                 shift_x += params[0][x] + INLINE_WIDTH
         # endregion
 
         # region printing text
+        if empty_matrix is None:
+            empty_matrix = [[1 for i in range(len(params[0]))] for j in range(len(params[1]))]
+        if empty_matrix == 'default':
+            empty_matrix = TableDrawer.create_default_empty_matrix(board)
         fnt = ImageFont.truetype('times.ttf', font_size)
         start_pix = OUTLINE_WIDTH
         shift_x = 0
@@ -73,81 +81,14 @@ class TableDrawer:
             shift_y = 0
             for y in range(y_size):
                 fnt_seed = (start_pix + shift_x + params[0][x] / 2, start_pix + shift_y + params[1][y] / 2)
-                draw.text(fnt_seed, str(board[y][x]), font=fnt, fill=0, anchor='mm')
                 shift_y += params[1][y] + INLINE_WIDTH
+                if empty_matrix[y][x] == 1:
+                    draw.text(fnt_seed, str(board[y][x]), font=fnt, fill=0, anchor='mm')
             shift_x += params[0][x] + INLINE_WIDTH
         # endregion
 
         img.show()
         img.save(path + 'abaka_table.png', 'PNG')
-
-        # old code
-        # with Image.open(path + 'BlankTable.png') as im:
-        #     draw = ImageDraw.Draw(im)
-        #     size = im.size[0]
-        #     color = 0
-        #     # region drawing box
-        #     draw.line((2, 0, 2, size), fill=color, width=5)
-        #     draw.line((0, 2, size, 2), fill=color, width=5)
-        #     draw.line((size - 3, 0, size - 3, size), fill=color, width=5)
-        #     draw.line((0, size - 3, size, size - 3), fill=color, width=5)
-        #     # endregion
-        #     # region drawing lines for cells
-        #     start_coord = 3
-        #     shift = 63
-        #     for x in range(1, 5):
-        #         x_coord = start_coord + shift * x
-        #         draw.line((x_coord, 0, x_coord, size), fill=color, width=3)
-        #     for y in range(1, 5):
-        #         y_coord = start_coord + shift * y
-        #         draw.line((0, y_coord, size, y_coord), fill=color, width=3)
-        #     # endregion
-        #     # region filling cells with colors and drawing cell values
-        #     start_coord = 5
-        #     shift = 63
-        #     replace_red = (244, 113, 116)
-        #     replace_green = (137, 232, 148)
-        #     replace_grey = (209, 207, 200)
-        #     fnt = ImageFont.truetype('times.ttf', 40)
-        #     for x in range(5):
-        #         for y in range(5):
-        #             seed = (start_coord + x * shift, start_coord + y * shift)
-        #             fnt_seed = (20 + seed[0], 10 + seed[1])
-        #             if final_board[x][y] < 0:
-        #                 ImageDraw.floodfill(im, seed, replace_red)
-        #                 draw.text(fnt_seed, '0', font=fnt, fill=0)
-        #             if final_board[x][y] > 0:
-        #                 ImageDraw.floodfill(im, seed, replace_green)
-        #                 draw.text(fnt_seed, str(final_board[x][y]), font=fnt, fill=0)
-        #             if final_board[x][y] == 0:
-        #                 ImageDraw.floodfill(im, seed, replace_grey)
-        #     # endregion
-        #     # im.show()
-        #     im.save(path + 'CompleteTable.png', 'PNG')
-        #     return path + 'CompleteTable.png'
-
-    @staticmethod
-    def get_cell_value(board, x, y):
-        if board[x][y] < 1:
-            return board[x][y]
-        value = 1
-        check_x = [-1, 1]
-        check_y = [-1, 1]
-        if x == 0 and x != 4:
-            check_x = [1]
-        if x == 4 and x != 0:
-            check_x = [-1]
-        if y == 0 and y != 4:
-            check_y = [1]
-        if y == 4 and y != 0:
-            check_y = [-1]
-        for ind_x in check_x:
-            if board[x + ind_x][y] == 1:
-                value += 1
-        for ind_y in check_y:
-            if board[x][y + ind_y] == 1:
-                value += 1
-        return value
 
     @staticmethod
     def board_params(board, font_size):
@@ -161,7 +102,10 @@ class TableDrawer:
             box = fnt.getbbox(str(board[0][y]))
             params[0].append(box[2])
         for x in range(x_len):
-            box = fnt.getbbox(str(board[x][0]))
+            if fnt.getbbox(str(board[x][0]))[1] < fnt.getbbox(SMALLEST_STRING)[1]:
+                box = fnt.getbbox(SMALLEST_STRING)
+            else:
+                box = fnt.getbbox(str(board[x][0]))
             params[1].append(box[3])
 
         # resizes params arrays to make cells square if they look like high rectangle (x < y)
@@ -181,15 +125,44 @@ class TableDrawer:
 
         return params
 
+    # default coloring - colors in green, red or gey and works only for int
+    # >0 - green, ==0 - grey, <0 - red, else - grey
+    @staticmethod
+    def create_default_color_matrix(board):
+        color_matrix = [[0 for i in range(len(board[0]))] for j in range(len(board))]
+        for x in range(len(board)):
+            for y in range(len(board[0])):
+                if type(board[x][y]) is int:
+                    if board[x][y] < 0:
+                        color_matrix[x][y] = C_RED
+                    if board[x][y] > 0:
+                        color_matrix[x][y] = C_GREEN
+                else:
+                    color_matrix[x][y] = C_GREY
+        return color_matrix
 
-board_mask = [["hello", 0, 0, 0, 0],
-              [1, 1, 1, 0, 0],
+    # default empty matrix: 0 - empty, 1 - print text
+    # in default '' or ' ' in board stands for empty
+    @staticmethod
+    def create_default_empty_matrix(board):
+        empty_matrix = [[0 for i in range(len(board[0]))] for j in range(len(board))]
+        for x in range(len(board)):
+            for y in range(len(board[0])):
+                if board[x][y] in ['', ' ']:
+                    empty_matrix[x][y] = 0
+                else:
+                    empty_matrix[x][y] = 1
+        return empty_matrix
+
+
+board_mask = [["hello", '', '', '', ''],
+              [1, 1, 1, '', ''],
               [1, 1, -1, -1, -1],
-              [0, 0, -1, -1, 1],
-              [0, 0, 0, 0, 0]]
+              ['', '', -1, -1, 1],
+              ['', '', '', '', '']]
 board_color_mask = [[0, 0, 0, 0, 0],
-               [1, 1, 1, 0, 0],
-               [1, 1, -1, -1, -1],
-               [0, 0, -1, -1, 1],
-               [0, 0, 0, 0, 0]]
-TableDrawer.draw_table(board_mask, 40, board_color_mask)
+                    [1, 1, 1, 0, 0],
+                    [1, 1, -1, -1, -1],
+                    [0, 0, -1, -1, 1],
+                    [0, 0, 0, 0, 0]]
+TableDrawer.draw_table(board_mask, 40, color_matrix=board_color_mask, empty_matrix='default')
