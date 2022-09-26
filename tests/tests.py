@@ -86,6 +86,38 @@ class TestSolveAbaka(unittest.TestCase):
                 self.assertEqual(vll[1][2][0], "3-1")
         sm.reload_res()
 
+    def test_table_sort(self):
+        sm = abaka_cls.StateMachine()
+        sm.register_player("1", "1")
+        sm.register_player("2", "2")
+        sm.register_player("3", "3")
+        sm.add_tour("1t", abaka_cls.GameAbaka("1t", "link", [["theme1", ["1"], ["1"]], ["theme2", ["1"], ["1"]]]))
+        sm.add_tour("2t", abaka_cls.GameAbaka("2t", "link", [["theme1", ["1"], ["1"]], ["theme2", ["1"], ["1"]]]))
+
+        sm.start_tour("1t")
+        sm.start_tour("2t")
+
+        sm.join_tour("1", "2t")
+        sm.join_tour("2", "2t")
+        sm.join_tour("3", "2t")
+
+        for player in sm.players.values():
+            player.current_tour = None
+
+        sm.join_tour("1", "1t")
+        sm.join_tour("2", "1t")
+        sm.join_tour("3", "1t")
+
+        sm.solve("2", "theme2", "1", "1")
+        # sm.res_table("2")
+        sm.solve("1", "theme2", "1", "1")
+        sm.solve("2", "theme1", "1", "1")
+        # sm.res_table("2")
+        sm.solve("1", "theme1", "1", "1")
+        sm.solve("2", "theme2", "2", "2")
+        sm.solve("1", "theme1", "2", "1")
+        sm.solve("2", "theme1", "2", "1")
+        sm.res_table("2")
 
 class TestSolveKarusel(unittest.TestCase):
     def get_player1(self):
@@ -134,10 +166,10 @@ class TestSolveKarusel(unittest.TestCase):
         pass
 
 
-ts_karusel = TestSolveKarusel()
-ts_karusel.test_solve()
-ts_karusel.test_sort()
+# ts_karusel = TestSolveKarusel()
+# ts_karusel.test_solve()
+# ts_karusel.test_sort()
 
 ts_abaka = TestSolveAbaka()
-ts_abaka.test_solve()
-ts_abaka.test_sort()
+# ts_abaka.test_solve()
+ts_abaka.test_table_sort()
