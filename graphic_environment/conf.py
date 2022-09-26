@@ -1,5 +1,3 @@
-PATH = 'Bolyarichs_mathtour_platform/abaka/data/table_images/'
-user_path = 'C:/KovalenkoDB/PycharmProjects/'
 X_CELL_GAP = 10
 Y_CELL_GAP = 10
 OUTLINE_WIDTH = 5
