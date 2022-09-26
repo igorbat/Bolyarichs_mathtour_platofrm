@@ -181,6 +181,13 @@ async def res_res_res(ctx):
     await ctx.send(msg)
 
 
+@bot.command(name='table_res', help='Получить результаты в виде таблицы')
+async def me(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    path = state_machine.res_table(ctx.author.id)
+    msg = 'Ваши текущие результаты.\n' + 'Жёлтым отмечены удвоенные бонусы!'
+    ctx.send(msg, file=discord.File(path))
+
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
