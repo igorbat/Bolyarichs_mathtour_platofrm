@@ -1,3 +1,5 @@
+from random import randint
+from PIL import ImageChops
 from abaka import abaka_cls
 from karusel import karusel_game, player, state_machine, team
 import unittest
@@ -87,37 +89,65 @@ class TestSolveAbaka(unittest.TestCase):
         sm.reload_res()
 
     def test_table_sort(self):
+        path_to_pic = '../tests/table_tests/expected_data/'
+        tasks = [['theme' + str(j + 1), ["1"], ["1"], ["1"]] for j in range(3)]
         sm = abaka_cls.StateMachine()
-        sm.register_player("1", "1")
-        sm.register_player("2", "2")
-        sm.register_player("3", "3")
-        sm.add_tour("1t", abaka_cls.GameAbaka("1t", "link", [["theme1", ["1"], ["1"]], ["theme2", ["1"], ["1"]]]))
-        sm.add_tour("2t", abaka_cls.GameAbaka("2t", "link", [["theme1", ["1"], ["1"]], ["theme2", ["1"], ["1"]]]))
+        sm.register_player("super_good", "1")
+        sm.register_player("super_bad", "2")
+        sm.register_player("almost_afk", "3")
+        sm.register_player("bonus_hunter", "4")
+        sm.register_player("normal_student", "5")
+        sm.add_tour("1t", abaka_cls.GameAbaka("1t", "link", tasks))
 
         sm.start_tour("1t")
-        sm.start_tour("2t")
 
-        sm.join_tour("1", "2t")
-        sm.join_tour("2", "2t")
-        sm.join_tour("3", "2t")
+        sm.join_tour("super_good", "1t")
+        sm.join_tour("super_bad", "1t")
+        sm.join_tour("almost_afk", "1t")
+        sm.join_tour("bonus_hunter", "1t")
+        sm.join_tour("normal_student", "1t")
 
-        for player in sm.players.values():
-            player.current_tour = None
+        sm.solve("almost_afk", "theme2", "1", "2")
+        sm.solve("bonus_hunter", "theme1", "1", "1")
+        sm.solve("bonus_hunter", "theme3", "1", "1")
+        sm.solve("normal_student", "theme1", "1", "1")
+        sm.solve("normal_student", "theme2", "1", "1")
+        sm.solve("super_good", "theme1", "1", "1")
+        sm.solve("super_bad", "theme3", "1", "2")
+        sm.solve("bonus_hunter", "theme2", "1", "1")
+        sm.solve("super_good", "theme1", "2", "1")
+        sm.solve("super_bad", "theme3", "2", "2")
+        sm.solve("normal_student", "theme2", "2", "1")
+        sm.solve("super_bad", "theme1", "1", "2")
+        sm.solve("super_bad", "theme2", "1", "2")
+        sm.solve("normal_student", "theme1", "2", "1")
+        sm.solve("super_good", "theme2", "1", "1")
+        sm.solve("bonus_hunter", "theme3", "2", "2")
+        sm.solve("normal_student", "theme3", "1", "1")
+        sm.solve("bonus_hunter", "theme2", "2", "1")
+        sm.solve("super_good", "theme2", "2", "1")
+        sm.solve("super_bad", "theme1", "2", "2")
+        sm.solve("almost_afk", "theme3", "1", "1")
+        sm.solve("normal_student", "theme3", "1", "2")
+        sm.solve("bonus_hunter", "theme1", "2", "1")
+        sm.solve("super_good", "theme3", "1", "1")
+        sm.solve("bonus_hunter", "theme2", "3", "1")
+        sm.solve("super_good", "theme2", "3", "1")
+        sm.solve("super_good", "theme1", "3", "1")
+        sm.solve("normal_student", "theme2", "3", "2")
 
-        sm.join_tour("1", "1t")
-        sm.join_tour("2", "1t")
-        sm.join_tour("3", "1t")
+        sm.res_table("super_good", path_to_pic=path_to_pic + "super_good_table.png")
+        sm.res_table("super_bad", path_to_pic=path_to_pic + "super_bad_table.png")
+        sm.res_table("almost_afk", path_to_pic=path_to_pic + "almost_afk_table.png")
+        sm.res_table("bonus_hunter", path_to_pic=path_to_pic + "bonus_hunter_table.png")
+        sm.res_table("normal_student", path_to_pic=path_to_pic + "normal_student_table.png")
 
-        sm.solve("2", "theme2", "1", "1")
-        # sm.res_table("2")
-        sm.solve("1", "theme2", "1", "1")
-        sm.solve("2", "theme1", "1", "1")
-        # sm.res_table("2")
-        sm.solve("1", "theme1", "1", "1")
-        sm.solve("2", "theme2", "2", "2")
-        sm.solve("1", "theme1", "2", "1")
-        sm.solve("2", "theme1", "2", "1")
-        sm.res_table("2")
+    def compare_pics(self, pic1, pic2):
+        diff = ImageChops.difference(pic1, pic2)
+        if diff.getbbox():
+            return False
+        else:
+            return True
 
 class TestSolveKarusel(unittest.TestCase):
     def get_player1(self):
