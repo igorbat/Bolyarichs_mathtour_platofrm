@@ -5,8 +5,9 @@ from graphic_environment.conf import RED_TAGS, GREEN_TAGS, GREY_TAGS
 
 
 class TableDrawer:
+    # TODO remove do_results - bad code
     @staticmethod
-    def draw_table(board, font_size, path_to_pic, color_matrix=None, double_cells=None):
+    def draw_table(board, font_size, path_to_pic, color_matrix=None, double_cells=None, results=None):
         # calculates the width and height of image
         params = TableDrawer.board_params(board, font_size, double_cells)
         x_size = len(params[0])
@@ -80,9 +81,26 @@ class TableDrawer:
 
         TableDrawer.post_print(draw, font_size // 2, params, double_cells)
 
+        if results is not None:
+            small_fnt = ImageFont.truetype('times.ttf', font_size // 3)
+            l_x, t_y, r_x, b_y = TableDrawer.get_cell_corners(x_size - 1, y_size - 1, params)
+            width, height = r_x - l_x, b_y - t_y
+            small_seed = (l_x - 1 + width / 6, t_y - 1 + height / 6)
+            big_seed = (l_x - 1 + width * 3 / 5, t_y - 1 + height / 2)
+            draw.text(small_seed, 'Всего', font=small_fnt, fill=0, anchor='mm')
+            draw.text(big_seed, str(results), font=fnt, fill=0, anchor='mm')
+
         # img.show()
         img.save(path_to_pic, 'PNG')
         return path_to_pic
+
+    # TODO make this work
+    @staticmethod
+    def print_text(draw: ImageDraw, box, font_size, text_params, fill=0, anchor='mm'):
+        if type(text_params) is tuple:
+            for word_params in text_params:
+                word = str(word_params[0])
+                w_fnt_size = word_params[1]
 
     @staticmethod
     def post_print(draw, font_size, params, double_cells=None):
@@ -94,8 +112,8 @@ class TableDrawer:
             word_bot, word_top = d_cell[2], d_cell[3]
             l_x, t_y, r_x, b_y = TableDrawer.get_cell_corners(c_x, c_y, params)
             draw.line((l_x, t_y, r_x, b_y), fill=0, width=INLINE_WIDTH)
-            bot_seed = ((r_x - l_x) / 4, (b_y - t_y) * 3 / 4)
-            top_seed = ((r_x - l_x) * 3 / 4, (b_y - t_y) / 4)
+            bot_seed = (l_x - 1 + (r_x - l_x) / 4, t_y - 1 + (b_y - t_y) * 3 / 4)
+            top_seed = (l_x - 1 + (r_x - l_x) * 3 / 4, t_y - 1 + (b_y - t_y) / 4)
             draw.text(bot_seed, str(word_bot), font=fnt, fill=0, anchor='mm')
             draw.text(top_seed, str(word_top), font=fnt, fill=0, anchor='mm')
 
@@ -144,10 +162,10 @@ class TableDrawer:
         for x in range(x_len):
             max_y = fnt.getbbox(SMALLEST_STRING)[3]
             for y in range(y_len):
-                if double_matrix[y][x] != '':
-                    word_size = double_matrix[y][x][1]
+                if double_matrix[x][y] != '':
+                    word_size = double_matrix[x][y][1]
                 else:
-                    word = str(board[y][x])
+                    word = str(board[x][y])
                     word_size = fnt.getbbox(word.lower())[3]
                 if word_size > max_y:
                     max_y = word_size
@@ -169,6 +187,21 @@ class TableDrawer:
             params[1][x] += 2 * int(font_size // 4)
 
         return params
+
+    # TODO make this work
+    @staticmethod
+    def get_box_size(text_params, font_size):
+        width, height = 0, 0
+        x_segments = []
+        y_segments = []
+        for word_params in text_params:
+            x_segment, y_segment = [], []
+            word = str(word_params[0])
+            l_x, t_y, r_x, b_y = word_params[1]
+            fnt_scale = word_params[2]
+            anchor = word_params[3]
+            fnt = ImageFont.truetype('times.ttf', font_size / fnt_scale)
+            box = fnt.getbbox(word)
 
     # default coloring - colors in green, red or gey and works only for int
     # >0 - green, ==0 - grey, <0 - red, else - grey

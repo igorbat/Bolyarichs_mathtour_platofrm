@@ -1,4 +1,4 @@
-from abaka.conf import PATH, USER_PATH, TABLE_NAME
+from abaka.conf import PATH, TABLE_NAME
 from graphic_environment.table_drawer import TableDrawer
 from collections import defaultdict
 import codecs
@@ -264,7 +264,7 @@ class StateMachine:
         ok, msg = self.players[player_id].my_point()
         return (ok, msg)
 
-    def res_table(self, player_id, fnt_size=32, path_to_pic='default'):
+    def res_table(self, player_id, fnt_size=32, path_to_pic=None):
         if player_id not in self.players:
             return (False, "Нет такого игрока")
         if self.players[player_id].current_tour is None:
@@ -279,6 +279,7 @@ class StateMachine:
             themes[tour.themes[x]] = x + 1
         failed_tasks = self.players[player_id].tours[tour.name][2]
         successful_tasks = self.players[player_id].tours[tour.name][3]
+        points = self.players[player_id].my_point()[1]
         gotten_bonuses = self.players[player_id].gotten_bonuses
         board = [['' for i in range(y_size + 2)] for j in range(x_size + 2)]
         color_matrix = [['' for i in range(y_size + 2)] for j in range(x_size + 2)]
@@ -336,9 +337,9 @@ class StateMachine:
                 else:
                     color_matrix[x_size + 1][column] = 'green'
 
-        if path_to_pic == 'default':
-            path_to_pic = USER_PATH + PATH + TABLE_NAME
-        return TableDrawer.draw_table(board, fnt_size, path_to_pic, color_matrix, double_cells)
+        if path_to_pic is None:
+            path_to_pic = PATH + TABLE_NAME
+        return TableDrawer.draw_table(board, fnt_size, path_to_pic, color_matrix, double_cells, points)
 
     def get_sorted_res(self):
         tour_names = self.tours.keys()
