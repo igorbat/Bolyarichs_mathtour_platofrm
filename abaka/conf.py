@@ -1,3 +1,2 @@
-PATH = 'Bolyarichs_mathtour_platform/abaka/data/table_images/'
-USER_PATH = 'C:/KovalenkoDB/PycharmProjects/'
+PATH = 'abaka/data/table_images/'
 TABLE_NAME = 'abaka_table.png'
