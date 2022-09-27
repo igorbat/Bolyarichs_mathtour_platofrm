@@ -152,7 +152,7 @@ class TableDrawer:
             max_x = fnt.getbbox(SMALLEST_STRING)[2]
             for x in range(x_len):
                 if double_matrix[x][y] != '':
-                    word_size = double_matrix[x][y][0]
+                    word_size = 2 * double_matrix[x][y][0]
                 else:
                     word = str(board[x][y])
                     word_size = fnt.getbbox(word.lower())[2]
@@ -163,7 +163,7 @@ class TableDrawer:
             max_y = fnt.getbbox(SMALLEST_STRING)[3]
             for y in range(y_len):
                 if double_matrix[x][y] != '':
-                    word_size = double_matrix[x][y][1]
+                    word_size = 2 * double_matrix[x][y][1]
                 else:
                     word = str(board[x][y])
                     word_size = fnt.getbbox(word.lower())[3]

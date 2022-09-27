@@ -1,5 +1,7 @@
 from random import randint
 from PIL import ImageChops
+from PIL import Image
+
 from abaka import abaka_cls
 from karusel import karusel_game, player, state_machine, team
 import unittest
@@ -136,11 +138,14 @@ class TestSolveAbaka(unittest.TestCase):
         sm.solve("super_good", "theme1", "3", "1")
         sm.solve("normal_student", "theme2", "3", "2")
 
-        sm.res_table("super_good", path_to_pic=path_to_pic + "super_good_table.png")
+        sm.res_table("super_good", fnt_size=32, path_to_pic=path_to_pic + "super_good_table.png")
         sm.res_table("super_bad", path_to_pic=path_to_pic + "super_bad_table.png")
         sm.res_table("almost_afk", path_to_pic=path_to_pic + "almost_afk_table.png")
         sm.res_table("bonus_hunter", path_to_pic=path_to_pic + "bonus_hunter_table.png")
         sm.res_table("normal_student", path_to_pic=path_to_pic + "normal_student_table.png")
+
+        with Image.open(path_to_pic + "super_good_table.png") as im:
+            print(self.compare_pics(im, im))
 
     def compare_pics(self, pic1, pic2):
         diff = ImageChops.difference(pic1, pic2)
