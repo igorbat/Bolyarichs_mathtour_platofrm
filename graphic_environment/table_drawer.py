@@ -3,9 +3,9 @@ from graphic_environment.conf import OUTLINE_WIDTH, INLINE_WIDTH, SMALLEST_STRIN
 from graphic_environment.conf import C_RED, C_GREEN, C_GREY
 from graphic_environment.conf import RED_TAGS, GREEN_TAGS, GREY_TAGS
 
-
 class TableDrawer:
     # TODO remove do_results - bad code
+    # TODO слишком много строк, разделить на подфункции
     @staticmethod
     def draw_table(board, font_size, path_to_pic, color_matrix=None, double_cells=None, results=None):
         # calculates the width and height of image
@@ -128,6 +128,7 @@ class TableDrawer:
             shift_y += params[1][y] + INLINE_WIDTH
         return (shift_x, shift_y, shift_x + params[0][c_x], shift_y + params[1][c_y])
 
+    # TODO слишком много строк, разделить на подфункции
     @staticmethod
     def board_params(board, font_size, double_cells=None):
         # first array in params stands for x-size of cells, second for y-size
@@ -205,6 +206,7 @@ class TableDrawer:
 
     # default coloring - colors in green, red or gey and works only for int
     # >0 - green, ==0 - grey, <0 - red, else - grey
+    # TODO добавить Enum с этими параметрами
     @staticmethod
     def create_default_color_matrix(board):
         color_matrix = [[0 for i in range(len(board[0]))] for j in range(len(board))]
@@ -234,14 +236,3 @@ class TableDrawer:
         return empty_matrix
 
 
-# board_mask = [['', '', '', '', ''],
-#               [1, 1, 1, '', ''],
-#               [1, 1, -1, -1, -1],
-#               ['hello', '', -1, -1, 1],
-#               ['', '', '', '', '']]
-# board_color_mask = [[0, 0, 0, 0, 0],
-#                     [1, 1, 1, 0, 0],
-#                     [1, 1, -1, -1, -1],
-#                     [0, 0, -1, -1, 1],
-#                     [0, 0, 0, 0, 0]]
-# TableDrawer.draw_table(board_mask, 40, color_matrix=board_color_mask, empty_matrix='default')

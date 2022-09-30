@@ -90,6 +90,7 @@ class TestSolveAbaka(unittest.TestCase):
                 self.assertEqual(vll[1][2][0], "3-1")
         sm.reload_res()
 
+    # TODO уменьшить размер теста, разделить его на дополнительные функции, отдельные тесты по игрокам
     def test_table_sort(self):
         path_to_pic = '../tests/table_tests/expected_data/'
         tasks = [['theme' + str(j + 1), ["1"], ["1"], ["1"]] for j in range(3)]
@@ -201,10 +202,10 @@ class TestSolveKarusel(unittest.TestCase):
         pass
 
 
-# ts_karusel = TestSolveKarusel()
-# ts_karusel.test_solve()
-# ts_karusel.test_sort()
+ts_karusel = TestSolveKarusel()
+ts_karusel.test_solve()
+ts_karusel.test_sort()
 
 ts_abaka = TestSolveAbaka()
-# ts_abaka.test_solve()
+ts_abaka.test_solve()
 ts_abaka.test_table_sort()

@@ -264,6 +264,7 @@ class StateMachine:
         ok, msg = self.players[player_id].my_point()
         return (ok, msg)
 
+    # TODO слишком много строк, разделить на подфункции
     def res_table(self, player_id, fnt_size=32, path_to_pic=None):
         if player_id not in self.players:
             return (False, "Нет такого игрока")
