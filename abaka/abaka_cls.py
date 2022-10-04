@@ -1,6 +1,8 @@
+from abaka.conf import PATH, TABLE_NAME
+from graphic_environment.table_drawer import TableDrawer
 from collections import defaultdict
 import codecs
-
+import os
 
 class Player:
     def __init__(self, acc_id, team_name):
@@ -8,6 +10,7 @@ class Player:
         self.team_name = team_name
         self.tours = {}
         self.current_tour = None
+        self.gotten_bonuses = []
 
     def join_tour(self, tour, tour_info):
         # if self.current_tour is None:
@@ -77,6 +80,10 @@ class Player:
     def add_bonus(self, p):
         self.tours[self.current_tour][4] += p
 
+    def add_bonus_type(self, b_type):
+        if b_type not in self.gotten_bonuses:
+            self.gotten_bonuses.append(b_type)
+
     def sent_tasks(self):
         if self.current_tour is None:
             return (False, "нет никакого турнира, в котором бы вы играли")
@@ -144,6 +151,11 @@ class GameAbaka:
             self.taken_bonuses.add(bonus_type)
             return self.bonus_to_point[bonus_type] * 2
         return self.bonus_to_point[bonus_type]
+
+    def multiplier_check(self, bonus_type):
+        if bonus_type in self.bonuses and bonus_type not in self.taken_bonuses:
+            return '2'
+        return '1'
 
 
 class StateMachine:
@@ -220,6 +232,8 @@ class StateMachine:
         if status:
             bns_lst = self.players[player_id].check_bonuses(theme, idd)
             for bns in bns_lst:
+                multiplier = self.tours[self.players[player_id].current_tour].multiplier_check(bns)
+                self.players[player_id].add_bonus_type(str(bns) + '_' + multiplier)
                 p = self.tours[self.players[player_id].current_tour].get_bonus(bns)
                 self.players[player_id].add_bonus(p)
 
@@ -249,6 +263,84 @@ class StateMachine:
             return (False, "Нет такого игрока")
         ok, msg = self.players[player_id].my_point()
         return (ok, msg)
+
+    # TODO слишком много строк, разделить на подфункции
+    def res_table(self, player_id, fnt_size=32, path_to_pic=None):
+        if player_id not in self.players:
+            return (False, "Нет такого игрока")
+        if self.players[player_id].current_tour is None:
+            return (False, "Вы нигде не играете")
+        if not self.tours[self.players[player_id].current_tour].active:
+            return (False, "Турник отключен")
+        tour = self.tours[self.players[player_id].current_tour]
+        x_size = len(tour.themes)
+        y_size = tour.task_count
+        themes = {}
+        for x in range(x_size):
+            themes[tour.themes[x]] = x + 1
+        failed_tasks = self.players[player_id].tours[tour.name][2]
+        successful_tasks = self.players[player_id].tours[tour.name][3]
+        points = self.players[player_id].my_point()[1]
+        gotten_bonuses = self.players[player_id].gotten_bonuses
+        board = [['' for i in range(y_size + 2)] for j in range(x_size + 2)]
+        color_matrix = [['' for i in range(y_size + 2)] for j in range(x_size + 2)]
+        white = (255, 255, 255)
+        yellow = (254, 242, 80)
+        double_cells = [[0, 0, 'Темы', '№ Задач']]
+
+        # fills names of themes and tasks
+        color_matrix[0][0] = white
+        color_matrix[x_size + 1][y_size + 1] = white
+        for x in range(1, x_size + 1):
+            board[x][0] = tour.themes[x - 1]
+            color_matrix[x][0] = white
+        for y in range(1, y_size + 1):
+            board[0][y] = str(y)
+            color_matrix[0][y] = white
+
+        # add bonuses to bottom and right cells
+        board[x_size + 1][0] = 'Бонус'
+        board[0][y_size + 1] = 'Бонус'
+        color_matrix[x_size + 1][0] = white
+        color_matrix[0][y_size + 1] = white
+
+        # add total to the most bottom-right cell !NOT IMPLEMENTED!
+
+        # fill board with points without bonuses and matrices
+        for f_task in failed_tasks:
+            theme, idd = f_task.split('_')
+            theme_ind = themes[theme]
+            idd_ind = int(idd)
+            board[theme_ind][idd_ind] = 0
+            color_matrix[theme_ind][idd_ind] = 'red'
+        for s_task in successful_tasks:
+            theme, idd = s_task.split('_')
+            theme_ind = themes[theme]
+            idd_ind = int(idd)
+            board[theme_ind][idd_ind] = idd_ind * 10
+            color_matrix[theme_ind][idd_ind] = 'green'
+
+        # fills bonus cells
+        for bonus in gotten_bonuses:
+            bns_type, mult_str = bonus.split('_')
+            mult = int(mult_str)
+            if not bns_type.isnumeric():
+                board[themes[bns_type]][y_size + 1] = 50 * mult
+                if mult == 2:
+                    color_matrix[themes[bns_type]][y_size + 1] = yellow
+                else:
+                    color_matrix[themes[bns_type]][y_size + 1] = 'green'
+            else:
+                column = int(bns_type)
+                board[x_size + 1][column] = column * 10 * mult
+                if mult == 2:
+                    color_matrix[x_size + 1][column] = yellow
+                else:
+                    color_matrix[x_size + 1][column] = 'green'
+
+        if path_to_pic is None:
+            path_to_pic = PATH + TABLE_NAME
+        return TableDrawer.draw_table(board, fnt_size, path_to_pic, color_matrix, double_cells, points)
 
     def get_sorted_res(self):
         tour_names = self.tours.keys()
