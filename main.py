@@ -28,7 +28,7 @@ state_machine = abaka.abaka_cls.StateMachine()
 #
 game_strong_5 = \
     abaka.abaka_cls.GameAbaka("pro_5",
-                              "https://drive.google.com/drive/u/0/folders/1WiQPRyU7NN5T_xZa0PmAGFctYIQ8-8Ij",
+                              "https://drive.google.com/file/d/1KGPom36J1xKOKNFZXCSR0qUqZgpIJWbj/view?usp=sharing",
                               TASKS_5_STRONG)
 state_machine.add_tour("pro_5", game_strong_5)
 
