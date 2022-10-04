@@ -3,7 +3,7 @@ from secret import TOKEN, ADMINS
 from discord.ext import commands
 from abaka.data.tasks_5_strong import *
 
-import abaka.abaka_cls
+from abaka.abaka_cls import *
 
 ADMIN_COMMANDS = ['!start', '!stop']
 
@@ -19,18 +19,18 @@ bot = commands.Bot(command_prefix='!')
 # state_machine.add_tour("test", karusel_test)
 
 
-state_machine = abaka.abaka_cls.StateMachine()
-# game_test = \
-#     GameAbaka("test",
-#               "https://docs.google.com/document/d/1VlLj1B6JeLmsBeVtijxZNSb5KWbF4nHI-uD7-zvZnwQ/edit?usp=sharing",
-#               TASKS_TEST)
-# state_machine.add_tour("test", game_test)
-#
-game_strong_5 = \
-    abaka.abaka_cls.GameAbaka("pro_5",
-                              "https://drive.google.com/file/d/1KGPom36J1xKOKNFZXCSR0qUqZgpIJWbj/view?usp=sharing",
-                              TASKS_5_STRONG)
-state_machine.add_tour("pro_5", game_strong_5)
+state_machine = StateMachine()
+game_test = \
+    GameAbaka("test",
+              "https://docs.google.com/document/d/1VlLj1B6JeLmsBeVtijxZNSb5KWbF4nHI-uD7-zvZnwQ/edit?usp=sharing",
+              TASKS_TEST)
+state_machine.add_tour("test", game_test)
+
+# game_strong_5 = \
+#     abaka.abaka_cls.GameAbaka("pro_5",
+#                               "https://drive.google.com/file/d/1KGPom36J1xKOKNFZXCSR0qUqZgpIJWbj/view?usp=sharing",
+#                               TASKS_5_STRONG)
+# state_machine.add_tour("pro_5", game_strong_5)
 
 # game_weak_5 = \
 #     GameAbaka("novice_5",
@@ -186,7 +186,7 @@ async def me(ctx):
     print(ctx.author.id, ctx.author.name, ctx.message.content)
     path = state_machine.res_table(ctx.author.id)
     msg = 'Ваши текущие результаты.\n' + 'Жёлтым отмечены удвоенные бонусы!'
-    ctx.send(msg, file=discord.File(path))
+    await ctx.send(msg, file=discord.File(path))
 
 @bot.event
 async def on_ready():
