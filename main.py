@@ -186,7 +186,7 @@ async def me(ctx):
     print(ctx.author.id, ctx.author.name, ctx.message.content)
     path = state_machine.res_table(ctx.author.id)
     msg = 'Ваши текущие результаты.\n' + 'Жёлтым отмечены удвоенные бонусы!'
-    ctx.send(msg, file=discord.File(path))
+    await ctx.send(msg, file=discord.File(path))
 
 @bot.event
 async def on_ready():
