@@ -26,11 +26,11 @@ game_test = \
               TASKS_TEST)
 state_machine.add_tour("test", game_test)
 
-# game_strong_5 = \
-#     abaka.abaka_cls.GameAbaka("pro_5",
-#                               "https://drive.google.com/file/d/1KGPom36J1xKOKNFZXCSR0qUqZgpIJWbj/view?usp=sharing",
-#                               TASKS_5_STRONG)
-# state_machine.add_tour("pro_5", game_strong_5)
+game_strong_5 = \
+    GameAbaka("phys",
+                              "https://drive.google.com/file/d/1AcGt8lXT9UEQYTBGgMsmalwwMJcSKCHG/view?usp=sharing",
+                              TASKS_5_STRONG)
+state_machine.add_tour("phys", game_strong_5)
 
 # game_weak_5 = \
 #     GameAbaka("novice_5",
