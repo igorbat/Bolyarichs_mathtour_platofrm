@@ -1,6 +1,8 @@
-from secret import DB_NAME
+from burat.secret import DB_NAME
 from collections import defaultdict
 import sqlite3
+
+# DB_NAME = "C:\\KovalenkoDB\\marathon.txt"
 
 class Player:
     def __init__(self):

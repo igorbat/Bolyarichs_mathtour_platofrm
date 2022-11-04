@@ -1,5 +1,5 @@
 from datetime import datetime
-from secret import DB_NAME
+from burat.secret import DB_NAME
 import sqlite3
 
 
@@ -10,7 +10,7 @@ class SolutionCache:
         self.solution_storage = []
         
         cursor = self.conn.cursor()
-        #cursor.execute("DROP TABLE solutions;")
+        # cursor.execute("DROP TABLE solutions;")
         cursor.execute("CREATE TABLE IF NOT EXISTS solutions(user_id TEXT, theme TEXT, task_id TEXT, answer TEXT, timee INT);")
         self.conn.commit()
 

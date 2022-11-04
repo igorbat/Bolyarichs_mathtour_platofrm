@@ -1,6 +1,6 @@
 import sqlite3
 import discord
-from secret import TOKEN, ADMINS, ADMIN_CHANNEL
+from burat.secret import TOKEN, ADMINS, ADMIN_CHANNEL
 from discord.ext import commands
 from solution_cache import SolutionCache
 from player_cache import PlayerCache
