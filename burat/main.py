@@ -1,7 +1,9 @@
 import sqlite3
 import discord
-from secret import TOKEN, ADMINS, ADMIN_CHANNEL
+from burat.secret import TOKEN, ADMINS, ADMIN_CHANNEL
 from discord.ext import commands
+
+from burat.util import calculate_points
 from solution_cache import SolutionCache
 from player_cache import PlayerCache
 from task_cache import TaskCache
@@ -84,21 +86,33 @@ async def finish(ctx):
 async def solve(ctx):
     print(ctx.author.id, ctx.author.name, ctx.message.content)
     parts = ctx.message.content.strip().split(maxsplit=5)[1:]
-    ok_, msgg = tasks.is_task(*parts)
+    tour = players.players_storage[ctx.author.id].tour
+    ok_, msgg = tasks.is_task(tour, *parts)
     if not ok_:
         await ctx.send(msgg)
         return
     # проверить, что не было повторной посылки по той же задаче
+    theme_count = 0
+    for sol in solutions.solution_storage:
+        if sol[0] == ctx.author.id and sol[1] == parts[0]:
+            theme_count += 1
+    if theme_count + 1 > int(parts[1]):
+        await ctx.send("Вы уже отправляли данную задачу")
+        return
+    elif theme_count + 1 < int(parts[1]):
+        await ctx.send("Вы ещё не отправили прошлые задачи")
+        return
 
     ok, msg1 = solutions.new_solution(ctx.author.id, *parts)
     print(msg1)
-    ok2 =  tasks.check_task(*parts)
+    ok2 = tasks.check_task(tour, *parts)
     await ctx.send(msg1 + '\n' + "Ура! ответ совпал с текущим в базе" if ok2 else "Увы, ответ не совпал с текущим в базе")
 
-@bot.command(name='points', help='число посылок')
+@bot.command(name='points', help='число очков')
 async def points(ctx):
     print(ctx.author.id, ctx.author.name, ctx.message.content)
-    ok, msg = solutions.solution_count(str(ctx.author.id))
+    tour = players.players_storage[ctx.author.id].tour
+    ok, msg = calculate_points(ctx.author.id, tour, solutions, tasks)
     print(msg)
     await ctx.send(msg)
 
