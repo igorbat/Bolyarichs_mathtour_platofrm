@@ -132,3 +132,11 @@ dmypy.json
 secret.py
 burat/secret.py
 burat/tasks/*
+burat/data/*
+.idea/*
+1t_res.html
+2t_res.html
+db.db
+phys_res.html
+pro_5_res.html
+test_res.html

@@ -99,3 +99,16 @@ class TaskCache:
         self.conn.commit()
 
         return (True, "Задачи обновлены")
+    
+    def is_task(self, tour, theme, taskid, ans):
+        if tour not in self.tours:
+            return (False, "такого турнира нет")
+        if theme not in self.tours[tour]:
+            return (False, "такой темы в этом турнире нет")
+        if not (taskid >= "1" and taskid <= "5"):
+            return (False, "некорректный номер задачи")
+        return (True, "все ок")
+   
+    def check_task(self, tour, theme, taskid, ans):
+        return self.tours[tour][theme].is_correct_ans(taskid=taskid, ans=ans)
+        

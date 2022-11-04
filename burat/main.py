@@ -83,11 +83,17 @@ async def finish(ctx):
 @bot.command(name='solve', help='Отправить решение в виде "solve ТЕМА ЗАДАЧА ОТВЕТ"')
 async def solve(ctx):
     print(ctx.author.id, ctx.author.name, ctx.message.content)
-    parts = ctx.message.content.strip().split(maxsplit=4)[1:]
+    parts = ctx.message.content.strip().split(maxsplit=5)[1:]
+    ok_, msgg = tasks.is_task(*parts)
+    if not ok_:
+        await ctx.send(msgg)
+        return
+    # проверить, что не было повторной посылки по той же задаче
 
-    ok, msg = solutions.new_solution(ctx.author.id, *parts)
-    print(msg)
-    await ctx.send(msg)
+    ok, msg1 = solutions.new_solution(ctx.author.id, *parts)
+    print(msg1)
+    ok2 =  tasks.check_task(*parts)
+    await ctx.send(msg1 + '\n' + "Ура! ответ совпал с текущим в базе" if ok2 else "Увы, ответ не совпал с текущим в базе")
 
 @bot.command(name='points', help='число посылок')
 async def points(ctx):
