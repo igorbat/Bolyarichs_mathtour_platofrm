@@ -5,7 +5,8 @@ import sqlite3
 class Player:
     def __init__(self):
         self.user_id = None
-
+        self.fixed = False
+        self.joined = "No registration"
         """
         1. фио
         2. название школы
@@ -29,7 +30,9 @@ class Player:
         self.tour = row[1]
         self.fio = row[2]
         self.allowed = row[3]
-    
+        self.joined = "Принят"
+        self.fixed = True
+
 
 class PlayerCache:
     def __init__(self, param_for_db=DB_NAME):
@@ -45,4 +48,49 @@ class PlayerCache:
         for player in cursor.fetchall():
             self.players_storage[player[0]].load_from_row(player)
     
+        self.fio = None
+        self.school = None
+        self.year = None
+        self.city = None
+        self.region = None
+        self.phone = None
+        self.trainer = None
+
+    def set_fio(self, id, fio):
+        self.players_storage[id].fio = fio
+        return True, "ФИО Сохранено"
+    
+    def set_school(self, id, school):
+        self.players_storage[id].school = school
+        return True, "Школа Сохранена"
+    
+    def set_year(self, id, year):
+        self.players_storage[id].year = year
+        return True, "Класс Сохранен"
+
+    def set_city(self, id, city):
+        self.players_storage[id].city = city
+        return True, "Населенный пункт Сохранен"
+    
+    def set_region(self, id, region):
+        self.players_storage[id].region = region
+        return True, "Регион Сохранен"
+    
+    def set_phone(self, id, phone):
+        self.players_storage[id].phone = phone
+        return True, "Телефон Сохранен"
+    
+    def set_trainer(self, id, trainer):
+        if self.players_storage[id].fixed:
+            return False, "Анкета на рассмотрении"
+        self.players_storage[id].trainer = trainer
+        return True, "Тренер Сохранен"
+    
+    def set_fixed(self, id):
+        self.players_storage[id].fixed = True
+        return True, "Анкета отправлена"
+    
+    def set_unfixed(self, id):
+        self.players_storage[id].fixed = False
+        return True, "Анкета вернулась учащемуся"
     # def allow(self, user_id):

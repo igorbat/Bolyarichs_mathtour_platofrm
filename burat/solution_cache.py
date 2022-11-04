@@ -18,7 +18,7 @@ class SolutionCache:
         for solution in cursor.fetchall():
             self.solution_storage.append([solution[0], solution[1], solution[2], solution[3], solution[4]])
     
-    def new_solution(self, user_id, theme, task_id, answer, timee=datetime.timestamp(datetime.now())):
+    def new_solution(self, user_id, theme, task_id, answer, timee=int(datetime.timestamp(datetime.now()))):
         self.solution_storage.append([user_id, theme, task_id, answer, timee])
         cursor = self.conn.cursor()
             

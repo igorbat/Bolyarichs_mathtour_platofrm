@@ -95,7 +95,7 @@ async def solve(ctx):
     ok2 =  tasks.check_task(*parts)
     await ctx.send(msg1 + '\n' + "Ура! ответ совпал с текущим в базе" if ok2 else "Увы, ответ не совпал с текущим в базе")
 
-@bot.command(name='points', help='число посылок')
+@bot.command(name='points', help='Число очков команды')
 async def points(ctx):
     print(ctx.author.id, ctx.author.name, ctx.message.content)
     ok, msg = solutions.solution_count(str(ctx.author.id))
@@ -104,7 +104,33 @@ async def points(ctx):
 
 ################################### Анкетные приколы
 
+@bot.command(name='points', help='Получить число предварительных очков')
+async def points(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    ok, msg = solutions.solution_count(str(ctx.author.id))
+    print(msg)
+    await ctx.send(msg)
 
+@bot.command(name='fio', help='Зарегистрировать ФИО')
+async def points(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    ok, msg = solutions.solution_count(str(ctx.author.id))
+    print(msg)
+    await ctx.send(msg)
+
+@bot.command(name='points', help='Получить число предварительных очков')
+async def points(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    ok, msg = solutions.solution_count(str(ctx.author.id))
+    print(msg)
+    await ctx.send(msg)
+
+@bot.command(name='points', help='Получить число предварительных очков')
+async def points(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    ok, msg = solutions.solution_count(str(ctx.author.id))
+    print(msg)
+    await ctx.send(msg)
 ###################################
 # @bot.command(name='hello', help='Отправить hello в админский чат')
 # async def me(ctx):
