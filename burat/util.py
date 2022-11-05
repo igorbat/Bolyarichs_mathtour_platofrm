@@ -1,5 +1,5 @@
-from burat.solution_cache import SolutionCache
-from burat.task_cache import TaskCache
+from solution_cache import SolutionCache
+from task_cache import TaskCache
 
 
 def calculate_points(player, tour, solution_cache: SolutionCache, tasks_cache: TaskCache):

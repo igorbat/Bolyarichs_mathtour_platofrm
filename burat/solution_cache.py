@@ -1,5 +1,5 @@
 from datetime import datetime
-from burat.secret import DB_NAME
+from secret import DB_NAME
 import sqlite3
 
 
@@ -25,7 +25,7 @@ class SolutionCache:
         entry = (user_id, theme, task_id, answer, timee)
         cursor.execute("INSERT INTO solutions VALUES(?, ?, ?, ?, ?);", entry)
         self.conn.commit()
-        return (True, "посылка принята {}".format(len(self.solution_storage)))
+        return (True, "посылка принята")
     
     def solution_count(self, user_id):
         ans = 0

@@ -1,9 +1,9 @@
 import sqlite3
 import discord
-from burat.secret import TOKEN, ADMINS, ADMIN_CHANNEL
+from secret import TOKEN, ADMINS, ADMIN_CHANNEL, PUBLIC_CHANNEL
 from discord.ext import commands
 
-from burat.util import calculate_points
+from util import calculate_points
 from solution_cache import SolutionCache
 from player_cache import PlayerCache
 from task_cache import TaskCache
@@ -19,7 +19,7 @@ solutions = SolutionCache()
 players = PlayerCache()
 tasks = TaskCache()
 
-ADMIN_COMMANDS = ['!registered', '!banned', '!finish', '!newtasks', '!gettasks']
+ADMIN_COMMANDS = ['!registered', '!banned', '!finish', '!newtasks', '!gettasks', '!changetour']
 
 @bot.check
 def dm_only(ctx):
@@ -35,15 +35,49 @@ def special_commands_only_for_admins(ctx):
 
 ################################### АДМИН КОМАНДЫ
 
-# @bot.command(name='registered', help='Принять команду в турнир')
-# async def registered(ctx):
-#     # await bot.get_channel(ADMIN_CHANNEL).send(msg)
+@bot.command(name='registered', help='Принять команду в турнир')
+async def registered(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    parts = ctx.message.content.strip().split(maxsplit=2)[1:]
+    if len(parts) == 0:
+        msg = "Недостаточно параметров"
+        print(msg)
+        await ctx.send(msg)
+        return
+    ok, msg1, msg2 = players.allow(parts[0])
+    await ctx.send(msg1)
+    if ok:
+        await bot.get_channel(PUBLIC_CHANNEL).send(msg2)
 
 
-# @bot.command(name='banned', help='НЕ Принять команду в турнир')
-# async def banned(ctx):
-#     # await bot.get_channel(ADMIN_CHANNEL).send(msg)
+@bot.command(name='banned', help='НЕ Принять команду в турнир')
+async def banned(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    parts = ctx.message.content.strip().split(maxsplit=2)[1:]
+    if len(parts) == 0:
+        msg = "Недостаточно параметров"
+        print(msg)
+        await ctx.send(msg)
+        return
+    ok, msg1, msg2 = players.set_unfixed(parts[0])
+    await ctx.send(msg1)
+    if ok:
+        await bot.get_channel(PUBLIC_CHANNEL).send(msg2)
 
+@bot.command(name='changetour', help='Сменить турнир у ПРИНЯТОЙ команды')
+async def changetour(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    parts = ctx.message.content.strip().split(maxsplit=3)[2:]
+    if len(parts) < 2:
+        msg = "Недостаточно параметров"
+        print(msg)
+        await ctx.send(msg)
+        return
+    ok, msg1, msg2 = players.admin_change_tour(*parts)
+    print(msg)
+    await ctx.send(msg)
+    if ok:
+        await bot.get_channel(PUBLIC_CHANNEL).send(msg2)
 
 @bot.command(name='newtasks', help='загрузить новые задачи: Турнир Тема ответ1 ответ2 ...')
 async def newtasks(ctx):
@@ -85,8 +119,18 @@ async def finish(ctx):
 @bot.command(name='solve', help='Отправить решение в виде "solve ТЕМА ЗАДАЧА ОТВЕТ"')
 async def solve(ctx):
     print(ctx.author.id, ctx.author.name, ctx.message.content)
-    parts = ctx.message.content.strip().split(maxsplit=5)[1:]
-    tour = players.players_storage[ctx.author.id].tour
+    parts = ctx.message.content.strip().split(maxsplit=4)[1:]
+    if len(parts) < 3:
+        msg = "Недостаточно параметров"
+        print(msg)
+        await ctx.send(msg)
+        return
+    if not players.players_storage[str(ctx.author.id)].allowed:
+        msg = "Вы еще не зарегистрированы"
+        print(msg)
+        await ctx.send(msg)
+        return
+    tour = players.players_storage[str(ctx.author.id)].tour
     ok_, msgg = tasks.is_task(tour, *parts)
     if not ok_:
         await ctx.send(msgg)
@@ -94,7 +138,7 @@ async def solve(ctx):
     # проверить, что не было повторной посылки по той же задаче
     theme_count = 0
     for sol in solutions.solution_storage:
-        if sol[0] == ctx.author.id and sol[1] == parts[0]:
+        if sol[0] == str(ctx.author.id) and sol[1] == parts[0]:
             theme_count += 1
     if theme_count + 1 > int(parts[1]):
         await ctx.send("Вы уже отправляли данную задачу")
@@ -103,7 +147,7 @@ async def solve(ctx):
         await ctx.send("Вы ещё не отправили прошлые задачи")
         return
 
-    ok, msg1 = solutions.new_solution(ctx.author.id, *parts)
+    ok, msg1 = solutions.new_solution(str(ctx.author.id), *parts)
     print(msg1)
     ok2 = tasks.check_task(tour, *parts)
     await ctx.send(msg1 + '\n' + "Ура! ответ совпал с текущим в базе" if ok2 else "Увы, ответ не совпал с текущим в базе")
@@ -111,40 +155,141 @@ async def solve(ctx):
 @bot.command(name='points', help='Число очков команды')
 async def points(ctx):
     print(ctx.author.id, ctx.author.name, ctx.message.content)
-    tour = players.players_storage[ctx.author.id].tour
-    ok, msg = calculate_points(ctx.author.id, tour, solutions, tasks)
+    if not players.players_storage[str(ctx.author.id)].allowed:
+        msg = "Вы еще не зарегистрированы"
+        print(msg)
+        await ctx.send(msg)
+        return
+    tour = players.players_storage[str(ctx.author.id)].tour
+    ok, msg = calculate_points(str(ctx.author.id), tour, solutions, tasks)
     print(msg)
     await ctx.send(msg)
 
 ################################### Анкетные приколы
 
-@bot.command(name='points', help='Получить число предварительных очков')
-async def points(ctx):
-    print(ctx.author.id, ctx.author.name, ctx.message.content)
-    ok, msg = solutions.solution_count(str(ctx.author.id))
-    print(msg)
-    await ctx.send(msg)
+"""
+1. фио
+2. название школы
+3. класс обучения (только число)
+4. населенный пункт
+5. регион
+6. телефон для связи
+7. *тренер/учитель/руководитель (при наличии) — фио, должность, место работы
+"""
 
 @bot.command(name='fio', help='Зарегистрировать ФИО')
-async def points(ctx):
+async def fio(ctx):
     print(ctx.author.id, ctx.author.name, ctx.message.content)
-    ok, msg = solutions.solution_count(str(ctx.author.id))
+    parts = ctx.message.content.strip().split(maxsplit=2)[1:]
+    if len(parts) == 0:
+        msg = "Недостаточно параметров"
+        print(msg)
+        await ctx.send(msg)
+        return
+    ok, msg = players.set_fio(str(ctx.author.id), ctx.message.content.strip().split(maxsplit=2)[1:][0])
     print(msg)
     await ctx.send(msg)
 
-@bot.command(name='points', help='Получить число предварительных очков')
-async def points(ctx):
+@bot.command(name='school', help='Зарегистрировать Школу')
+async def school(ctx):
     print(ctx.author.id, ctx.author.name, ctx.message.content)
-    ok, msg = solutions.solution_count(str(ctx.author.id))
+    parts = ctx.message.content.strip().split(maxsplit=2)[1:]
+    if len(parts) == 0:
+        msg = "Недостаточно параметров"
+        print(msg)
+        await ctx.send(msg)
+        return
+    ok, msg = players.set_school(str(ctx.author.id), ctx.message.content.strip().split(maxsplit=2)[1:][0])
     print(msg)
     await ctx.send(msg)
 
-@bot.command(name='points', help='Получить число предварительных очков')
-async def points(ctx):
+@bot.command(name='year', help='Зарегистрировать Класс обучения')
+async def year(ctx):
     print(ctx.author.id, ctx.author.name, ctx.message.content)
-    ok, msg = solutions.solution_count(str(ctx.author.id))
+    parts = ctx.message.content.strip().split(maxsplit=2)[1:]
+    if len(parts) == 0:
+        msg = "Недостаточно параметров"
+        print(msg)
+        await ctx.send(msg)
+        return
+    ok, msg = players.set_year(str(ctx.author.id), ctx.message.content.strip().split(maxsplit=2)[1:][0])
     print(msg)
     await ctx.send(msg)
+
+@bot.command(name='city', help='Зарегистрировать Населенный пункт')
+async def city(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    parts = ctx.message.content.strip().split(maxsplit=2)[1:]
+    if len(parts) == 0:
+        msg = "Недостаточно параметров"
+        print(msg)
+        await ctx.send(msg)
+        return
+    ok, msg = players.set_city(str(ctx.author.id), ctx.message.content.strip().split(maxsplit=2)[1:][0])
+    print(msg)
+    await ctx.send(msg)
+
+@bot.command(name='region', help='Зарегистрировать Регион')
+async def region(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    parts = ctx.message.content.strip().split(maxsplit=2)[1:]
+    if len(parts) == 0:
+        msg = "Недостаточно параметров"
+        print(msg)
+        await ctx.send(msg)
+        return
+    ok, msg = players.set_region(str(ctx.author.id), ctx.message.content.strip().split(maxsplit=2)[1:][0])
+    print(msg)
+    await ctx.send(msg)
+
+@bot.command(name='phone', help='Зарегистрировать Телефон')
+async def phone(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    parts = ctx.message.content.strip().split(maxsplit=2)[1:]
+    if len(parts) == 0:
+        msg = "Недостаточно параметров"
+        print(msg)
+        await ctx.send(msg)
+        return
+    ok, msg = players.set_phone(str(ctx.author.id), ctx.message.content.strip().split(maxsplit=2)[1:][0])
+    print(msg)
+    await ctx.send(msg)
+
+@bot.command(name='trainer', help='Зарегистрировать Тренера')
+async def trainer(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    parts = ctx.message.content.strip().split(maxsplit=2)[1:]
+    if len(parts) == 0:
+        msg = "Недостаточно параметров"
+        print(msg)
+        await ctx.send(msg)
+        return
+    ok, msg = players.set_trainer(str(ctx.author.id), ctx.message.content.strip().split(maxsplit=2)[1:][0])
+    print(msg)
+    await ctx.send(msg)
+
+@bot.command(name='tour', help='Зарегистрировать Тренера')
+async def tour(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    parts = ctx.message.content.strip().split(maxsplit=2)[1:]
+    if len(parts) == 0:
+        msg = "Недостаточно параметров"
+        print(msg)
+        await ctx.send(msg)
+        return
+    ok, msg = players.set_tour(str(ctx.author.id), ctx.message.content.strip().split(maxsplit=2)[1:][0])
+    print(msg)
+    await ctx.send(msg)
+
+@bot.command(name='register', help='Отправить Анкету на проверку')
+async def register(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    ok, msg_user, msg_admin = players.set_fixed(str(ctx.author.id))
+    print(msg_user + '\n' + msg_admin)
+    await ctx.send(msg_user)
+    if ok:
+        await bot.get_channel(ADMIN_CHANNEL).send(msg_admin)
+
 ###################################
 # @bot.command(name='hello', help='Отправить hello в админский чат')
 # async def me(ctx):
