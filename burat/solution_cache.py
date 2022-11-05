@@ -1,5 +1,5 @@
 from datetime import datetime
-from secret import DB_NAME
+from burat.secret import DB_NAME
 import sqlite3
 
 
