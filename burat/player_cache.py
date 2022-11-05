@@ -1,4 +1,4 @@
-from secret import DB_NAME
+from burat.secret import DB_NAME
 from collections import defaultdict
 import sqlite3
 
@@ -27,6 +27,11 @@ class Player:
         self.trainer = None
         self.tour = None
 
+    # added for easier comparing
+    def __str__(self):
+        str1 = "{} {} {} ".format(self.user_id, self.fixed, self.allowed)
+        str2 = "{} {} {} {} {} {} {} {}".format(self.fio, self.school, self.year, self.city, self.region, self.phone, self.trainer, self.tour)
+        return str1 + str2
 
     def load_from_row(self, row):
         self.user_id = row[0]

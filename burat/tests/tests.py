@@ -1,10 +1,9 @@
 from burat.player_cache import PlayerCache
 from burat.solution_cache import SolutionCache
+from burat.task_cache import TaskCache
 from burat.secret import DB_NAME
 
 import unittest
-
-from burat.task_cache import TaskCache
 
 
 class CacheTest(unittest.TestCase):
@@ -28,7 +27,7 @@ class CacheTest(unittest.TestCase):
         for i in range(5):
             for j in range(4):
                 if sol_c2.solution_storage[i][j] != sols[i][j]:
-                    print("Не совпали значения с такими координатами: ", str(i) + ',', j)
+                    print("solution_cache: Не совпали значения с такими координатами: ", str(i) + ',', j)
                     sol_c2.conn.close()
                     return False
         if print_ok:
@@ -41,7 +40,7 @@ class CacheTest(unittest.TestCase):
         for group in groups:
             for theme in task_c2.tours[group]:
                 if str(tasks[c]) != str(task_c2.tours[group][theme]):
-                    print("Не совпали значения с такими координатами: ", str(group) + ',', theme)
+                    print("task_cache: Не совпали значения с такими координатами: ", str(group) + ',', theme)
                     task_c2.conn.close()
                     return False
                 c += 1
@@ -108,10 +107,57 @@ class CacheTest(unittest.TestCase):
         if self.compare_task_cache_and_db(tasks, groups) and print_ok:
             print("task creating or updating is ok")
 
-    def player_cache_test(self):
+    def compare_player_cache_and_db(self, id_list):
+        player_c2 = PlayerCache(DB_NAME)
+        c = 0
+        for user in player_c2.players_storage:
+            if str(user) != str(id_list[c]):
+                print("player_cache: Не совпали значения в индексе: ", str(c))
+                player_c2.conn.close()
+                return False
+            c += 1
+        player_c2.conn.close()
+        return True
+
+    def player_cache_test_allow(self, print_ok=True):
         open(DB_NAME, 'w').close()
-        player_c1 = PlayerCache()
-        # функций для проеверки пока нет
+        id_list = []
+        player_c1 = PlayerCache(DB_NAME)
+
+        player_c1.allow('1')
+        player_c1.allow('12')
+        player_c1.allow('123')
+        player_c1.allow('1234')
+        player_c1.allow('12345')
+
+        for user in player_c1.players_storage:
+            id_list.append(user)
+        player_c1.conn.close()
+
+        if self.compare_player_cache_and_db(id_list) and print_ok:
+            print("player allowing is ok")
+
+    def player_cache_test_change_tour(self, print_ok=True):
+        self.player_cache_test_allow(False)
+        id_list = []
+        player_c1 = PlayerCache(DB_NAME)
+
+        player_c1.admin_change_tour('1', '2')
+        player_c1.admin_change_tour('12', '2')
+        player_c1.admin_change_tour('123', '3')
+        player_c1.admin_change_tour('1234', '3')
+        player_c1.admin_change_tour('12345', '1')
+
+        # to check whether they are allowed to
+        player_c1.admin_change_tour('11111', '2')
+        player_c1.admin_change_tour('22222', '1')
+
+        for user in player_c1.players_storage:
+            id_list.append(user)
+        player_c1.conn.close()
+
+        if self.compare_player_cache_and_db(id_list) and print_ok:
+            print("changing player's tour is ok")
 
 
 cache_test = CacheTest()
@@ -119,3 +165,5 @@ cache_test.solution_cache_test()
 cache_test.task_cache_test_create()
 cache_test.task_cache_test_update()
 cache_test.task_cache_test_create_or_update()
+cache_test.player_cache_test_allow()
+cache_test.player_cache_test_change_tour()
