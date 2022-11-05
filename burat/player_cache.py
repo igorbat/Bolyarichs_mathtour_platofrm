@@ -142,7 +142,7 @@ class PlayerCache:
         if not self.players_storage[id].fixed:
             return False, "Анкета не принята", ""
         self.players_storage[id].allowed = True
-
+        self.players_storage[id].user_id = id
         cursor = self.conn.cursor()
         entry = (self.players_storage[id].user_id, self.players_storage[id].tour, self.players_storage[id].fio)
         cursor.execute("INSERT INTO players VALUES(?, ?, ?);", entry)
