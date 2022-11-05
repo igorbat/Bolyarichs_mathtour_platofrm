@@ -27,6 +27,7 @@ class Player:
         self.trainer = None
         self.tour = None
 
+    # added for easier comparing
     def __str__(self):
         str1 = "{} {} {} ".format(self.user_id, self.fixed, self.allowed)
         str2 = "{} {} {} {} {} {} {} {}".format(self.fio, self.school, self.year, self.city, self.region, self.phone, self.trainer, self.tour)
