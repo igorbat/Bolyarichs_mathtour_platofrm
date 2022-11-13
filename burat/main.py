@@ -1,5 +1,7 @@
 import sqlite3
 import discord
+
+from burat.scripts.table_from_cache import table_from_cache
 from secret import TOKEN, ADMINS, ADMIN_CHANNEL, PUBLIC_CHANNEL, HI_CHANNEL
 from discord.ext import commands
 
@@ -77,8 +79,8 @@ async def changetour(ctx):
         await ctx.send(msg)
         return
     ok, msg1, msg2 = players.admin_change_tour(*parts)
-    print(msg)
-    await ctx.send(msg)
+    print(msg1)
+    await ctx.send(msg1)
     if ok:
         await bot.get_channel(PUBLIC_CHANNEL).send(msg2)
 
@@ -167,6 +169,22 @@ async def points(ctx):
     ok, msg = calculate_points(str(ctx.author.id), tour, solutions, tasks)
     print(msg)
     await ctx.send(msg)
+
+################################### Всякие таблички
+@bot.command(name='table_res', help='Таблица с результатами для игрока')
+async def table_res(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    if not players.players_storage[str(ctx.author.id)].allowed:
+        msg = "Вы еще не зарегистрированы"
+        print(msg)
+        await ctx.send(msg)
+        return
+    path_to_pic, table_name, player_points = table_from_cache(ctx.author.id, players, solutions, tasks)
+    file = discord.File(path_to_pic, filename=table_name)
+    embed = discord.Embed(title='Таблица с результатами')
+    embed.set_image(url="attachment://" + table_name)
+    embed.add_field(name='Всего баллов:', value=player_points)
+    await ctx.send(file=file, embed=embed)
 
 ################################### Анкетные приколы
 

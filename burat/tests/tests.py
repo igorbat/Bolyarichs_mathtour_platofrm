@@ -1,11 +1,13 @@
+from PIL import Image, ImageChops
+
 from burat.player_cache import PlayerCache
+from burat.scripts.table_from_cache import table_from_cache
 from burat.solution_cache import SolutionCache
 from burat.secret import DB_NAME
 
 import unittest
 
 from burat.task_cache import TaskCache
-
 
 class CacheTest(unittest.TestCase):
     def solution_cache_test(self, print_ok=True):
@@ -119,3 +121,70 @@ cache_test.solution_cache_test()
 cache_test.task_cache_test_create()
 cache_test.task_cache_test_update()
 cache_test.task_cache_test_create_or_update()
+
+
+class TablesTest(unittest.TestCase):
+    def table_res_test(self):
+        open(DB_NAME, 'w').close()
+        solutions = SolutionCache(DB_NAME)
+        tasks = TaskCache(DB_NAME)
+        players = PlayerCache(DB_NAME)
+        self.create_player(1, 'a b c d e f g pro', players)
+        tasks.new_task('pro', 'geom', '1', '2', '3', '4', '5')
+        tasks.new_task('pro', 'combi', '1', '2', '3', '4', '5')
+        tasks.new_task('pro', 'algebra', '1', '2', '3', '4', '5')
+        tasks.new_task('pro', 'topol', '1', '2', '3', '4', '5')
+        tasks.new_task('pro', 'rofl', '1', '2', '3', '4', '5')
+        players.set_fixed(1)
+        players.allow(1)
+        solutions.new_solution(1, 'geom', '1', '1')
+        solutions.new_solution(1, 'geom', '2', '2')
+        solutions.new_solution(1, 'geom', '3', '1')
+        solutions.new_solution(1, 'geom', '4', '4')
+        solutions.new_solution(1, 'combi', '1', '2')
+        solutions.new_solution(1, 'combi', '2', '1')
+        solutions.new_solution(1, 'combi', '3', '3')
+        solutions.new_solution(1, 'algebra', '1', '1')
+        solutions.new_solution(1, 'algebra', '2', '3')
+        solutions.new_solution(1, 'algebra', '3', '3')
+        solutions.new_solution(1, 'topol', '1', '5')
+        solutions.new_solution(1, 'topol', '2', '5')
+        path, name, points = table_from_cache(1, players, solutions, tasks, path_to_pic="table_tests/test_table.png")
+        print(f"Table created succefully: points - {points}")
+        solutions.conn.close()
+        tasks.conn.close()
+        players.conn.close()
+        with Image.open("table_tests/test_table.png") as im:
+            print("Tables matched" if self.compare_pics(im, im) else "Didn't match")
+
+    def compare_pics(self, pic1, pic2):
+        diff = ImageChops.difference(pic1, pic2)
+        if diff.getbbox():
+            return False
+        else:
+            return True
+
+    def create_player(self, player_id, data: str, players: PlayerCache):
+        """
+        1. фио
+        2. название школы
+        3. класс обучения (только число)
+        4. населенный пункт
+        5. регион
+        6. телефон для связи
+        7. *тренер/учитель/руководитель (при наличии) — фио, должность, место работы
+        8. тур (pro, novice)
+        """
+        fields = data.split()
+        players.set_fio(player_id, fields[0])
+        players.set_school(player_id, fields[1])
+        players.set_year(player_id, fields[2])
+        players.set_city(player_id, fields[3])
+        players.set_region(player_id, fields[4])
+        players.set_phone(player_id, fields[5])
+        players.set_trainer(player_id, fields[6])
+        players.set_tour(player_id, fields[7])
+
+
+tables_test = TablesTest()
+tables_test.table_res_test()
