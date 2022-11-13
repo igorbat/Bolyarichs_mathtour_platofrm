@@ -217,6 +217,9 @@ class TableDrawer:
                         color_matrix[x][y] = C_RED
                     if board[x][y] > 0:
                         color_matrix[x][y] = C_GREEN
+                elif board[x][y] != '':
+                    # white
+                    color_matrix[x][y] = (255, 255, 255)
                 else:
                     color_matrix[x][y] = C_GREY
         return color_matrix
