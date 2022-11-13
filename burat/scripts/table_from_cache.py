@@ -5,7 +5,7 @@ from burat.solution_cache import SolutionCache
 from burat.task_cache import TaskCache
 from burat.graphic_environment.table_drawer import TableDrawer
 from burat.util import calculate_points
-from burat.scripts.conf import PATH, TABLE_NAME
+from burat.data.conf import TABLE_NAME, PATH
 
 
 def table_from_cache(player, player_cache: PlayerCache, solution_cache: SolutionCache, tasks_cache: TaskCache, font_size=32, path_to_pic=None):
