@@ -3,7 +3,7 @@ import discord
 from secret import TOKEN, ADMINS, ADMIN_CHANNEL, PUBLIC_CHANNEL, HI_CHANNEL
 from discord.ext import commands
 
-from util import calculate_points
+from util import calculate_points, generate_html
 from solution_cache import SolutionCache
 from player_cache import PlayerCache
 from task_cache import TaskCache
@@ -22,7 +22,7 @@ solutions = SolutionCache()
 players = PlayerCache()
 tasks = TaskCache()
 
-ADMIN_COMMANDS = ['!registered', '!banned', '!finish', '!newtasks', '!gettasks', '!changetour']
+ADMIN_COMMANDS = ['!registered', '!banned', '!finish', '!newtasks', '!gettasks', '!changetour', "!res_res_res"]
 
 @bot.check
 def dm_only(ctx):
@@ -117,6 +117,11 @@ async def finish(ctx):
     tasks.conn.close()
     await ctx.send('Сдамплена база. Теперь можно убить бота')
 
+@bot.command(name='res_res_res', help='Сгенерировать табличку результатов')
+async def res_res_res(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    generate_html(solutions, tasks, players)
+    await ctx.send('Сгенерены html-ки')
 
 ################################### ИГРОВОЙ ПРОЦЕСС
 @bot.command(name='solve', help='Отправить решение в виде "solve ТЕМА ЗАДАЧА ОТВЕТ"')
