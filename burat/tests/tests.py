@@ -1,3 +1,5 @@
+from PIL import Image, ImageChops
+
 from burat.player_cache import PlayerCache
 from burat.scripts.table_from_cache import table_from_cache
 from burat.solution_cache import SolutionCache
@@ -152,6 +154,15 @@ class TablesTest(unittest.TestCase):
         solutions.conn.close()
         tasks.conn.close()
         players.conn.close()
+        with Image.open("table_tests/test_table.png") as im:
+            print("Tables matched" if self.compare_pics(im, im) else "Didn't match")
+
+    def compare_pics(self, pic1, pic2):
+        diff = ImageChops.difference(pic1, pic2)
+        if diff.getbbox():
+            return False
+        else:
+            return True
 
     def create_player(self, player_id, data: str, players: PlayerCache):
         """
