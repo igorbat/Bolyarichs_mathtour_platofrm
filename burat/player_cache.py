@@ -32,6 +32,7 @@ class Player:
         self.user_id = row[0]
         self.tour = row[1]
         self.fio = row[2]
+        self.regg = row[3]
         self.fixed = True
         self.allowed = True
 
@@ -42,7 +43,7 @@ class PlayerCache:
         self.players_storage = defaultdict(Player)
         
         cursor = self.conn.cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS players(user_id TEXT PRIMARY KEY, tour TEXT, fio TEXT);")
+        cursor.execute("CREATE TABLE IF NOT EXISTS players(user_id TEXT PRIMARY KEY, tour TEXT, fio TEXT, reggi TEXT);")
         self.conn.commit()
 
         cursor.execute("SELECT * FROM players;")
@@ -136,18 +137,18 @@ class PlayerCache:
             return False, "Анкета итак не принята", ""
         self.players_storage[id].fixed = False
         self.players_storage[id].allowed = False
-        return True, "Анкета вернулась учащемуся",  "{}: Ваша анкета отвергнута".format(self.players_storage[id].fio)
+        return True, "Анкета вернулась учащемуся",  "<@{}> {}: Ваша анкета отвергнута".format(id, self.players_storage[id].fio)
 
-    def allow(self, id):
+    def allow(self, id, regg):
         if not self.players_storage[id].fixed:
             return False, "Анкета не принята", ""
         self.players_storage[id].allowed = True
         self.players_storage[id].user_id = id
         cursor = self.conn.cursor()
-        entry = (self.players_storage[id].user_id, self.players_storage[id].tour, self.players_storage[id].fio)
-        cursor.execute("INSERT INTO players VALUES(?, ?, ?);", entry)
+        entry = (self.players_storage[id].user_id, self.players_storage[id].tour, self.players_storage[id].fio, regg)
+        cursor.execute("INSERT INTO players VALUES(?, ?, ?, ?);", entry)
         self.conn.commit()
-        return True, "Игрок принят", "{}: Ваша анкета принята".format(self.players_storage[id].fio)
+        return True, "Игрок принят", "<@{}> {}: Ваша анкета принята".format(id, self.players_storage[id].fio)
 
     def admin_change_tour(self, id, new_tour):
         if not self.players_storage[id].allowed:

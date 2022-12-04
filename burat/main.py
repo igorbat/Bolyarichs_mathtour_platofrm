@@ -43,13 +43,13 @@ def special_commands_only_for_admins(ctx):
 @bot.command(name='registered', help='Принять команду в турнир')
 async def registered(ctx):
     print(ctx.author.id, ctx.author.name, ctx.message.content)
-    parts = ctx.message.content.strip().split(maxsplit=1)[1:]
-    if len(parts) == 0:
+    parts = ctx.message.content.strip().split(maxsplit=2)[1:]
+    if len(parts) < 2:
         msg = "Недостаточно параметров"
         print(msg)
         await ctx.send(msg)
         return
-    ok, msg1, msg2 = players.allow(parts[0])
+    ok, msg1, msg2 = players.allow(parts[0], parts[1])
     await ctx.send(msg1)
     if ok:
         await bot.get_channel(PUBLIC_CHANNEL).send(msg2)
@@ -132,41 +132,41 @@ async def super_res(ctx):
     generate_html_bonuses(solutions, tasks, players)
     await ctx.send('Сгенерены super-html-ки')
 ################################### ИГРОВОЙ ПРОЦЕСС
-# @bot.command(name='solve', help='Отправить решение в виде "solve ТЕМА ЗАДАЧА ОТВЕТ"')
-# async def solve(ctx):
-#     print(ctx.author.id, ctx.author.name, ctx.message.content)
-#     parts = ctx.message.content.strip().split(maxsplit=3)[1:]
-#     if len(parts) < 3:
-#         msg = "Недостаточно параметров"
-#         print(msg)
-#         await ctx.send(msg)
-#         return
-#     if not players.players_storage[str(ctx.author.id)].allowed:
-#         msg = "Вы еще не зарегистрированы"
-#         print(msg)
-#         await ctx.send(msg)
-#         return
-#     tour = players.players_storage[str(ctx.author.id)].tour
-#     ok_, msgg = tasks.is_task(tour, *parts)
-#     if not ok_:
-#         await ctx.send(msgg)
-#         return
-#     # проверить, что не было повторной посылки по той же задаче
-#     theme_count = 0
-#     for sol in solutions.solution_storage:
-#         if sol[0] == str(ctx.author.id) and sol[1] == parts[0]:
-#             theme_count += 1
-#     if theme_count + 1 > int(parts[1]):
-#         await ctx.send("Вы уже отправляли данную задачу")
-#         return
-#     elif theme_count + 1 < int(parts[1]):
-#         await ctx.send("Вы ещё не отправили прошлые задачи")
-#         return
+@bot.command(name='solve', help='Отправить решение в виде "solve ТЕМА ЗАДАЧА ОТВЕТ"')
+async def solve(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    parts = ctx.message.content.strip().split(maxsplit=3)[1:]
+    if len(parts) < 3:
+        msg = "Недостаточно параметров"
+        print(msg)
+        await ctx.send(msg)
+        return
+    if not players.players_storage[str(ctx.author.id)].allowed:
+        msg = "Вы еще не зарегистрированы"
+        print(msg)
+        await ctx.send(msg)
+        return
+    tour = players.players_storage[str(ctx.author.id)].tour
+    ok_, msgg = tasks.is_task(tour, *parts)
+    if not ok_:
+        await ctx.send(msgg)
+        return
+    # проверить, что не было повторной посылки по той же задаче
+    theme_count = 0
+    for sol in solutions.solution_storage:
+        if sol[0] == str(ctx.author.id) and sol[1] == parts[0]:
+            theme_count += 1
+    if theme_count + 1 > int(parts[1]):
+        await ctx.send("Вы уже отправляли данную задачу")
+        return
+    elif theme_count + 1 < int(parts[1]):
+        await ctx.send("Вы ещё не отправили прошлые задачи")
+        return
 
-#     ok, msg1 = solutions.new_solution(str(ctx.author.id), *parts)
-#     print(msg1)
-#     ok2 = tasks.check_task(tour, *parts)
-#     await ctx.send(msg1 + '\n' + "Ура! ответ совпал с текущим в базе" if ok2 else "Увы, ответ не совпал с текущим в базе")
+    ok, msg1 = solutions.new_solution(str(ctx.author.id), *parts)
+    print(msg1)
+    ok2 = tasks.check_task(tour, *parts)
+    await ctx.send(msg1 + '\n' + "Ура! ответ совпал с текущим в базе" if ok2 else "Увы, ответ не совпал с текущим в базе")
 
 @bot.command(name='points', help='Число очков команды')
 async def points(ctx):
