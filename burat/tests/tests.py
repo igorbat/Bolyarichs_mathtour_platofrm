@@ -1,10 +1,10 @@
-from burat.player_cache import PlayerCache
-from burat.solution_cache import SolutionCache
-from burat.secret import DB_NAME
+from player_cache import PlayerCache
+from solution_cache import SolutionCache
+from secret import DB_NAME
 
 import unittest
 
-from burat.task_cache import TaskCache
+from task_cache import TaskCache
 
 
 class CacheTest(unittest.TestCase):
