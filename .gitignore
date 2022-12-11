@@ -133,6 +133,9 @@ secret.py
 burat/secret.py
 burat/tasks/*
 burat/data/*
+novosib/secret.py
+novosib/tasks/*
+novosib/data/
 .idea/*
 1t_res.html
 2t_res.html
