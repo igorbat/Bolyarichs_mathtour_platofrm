@@ -27,17 +27,17 @@ ADMIN_COMMANDS = ['!registered', '!banned', '!finish',
  '!newtasks', '!gettasks',
   '!changetour', "!res_res_res", "!super_res"]
 
-# @bot.check
-# def dm_only(ctx):
-#     return ctx.guild is None
+@bot.check
+def dm_only(ctx):
+    return ctx.guild is None
 
 
-# @bot.check
-# def special_commands_only_for_admins(ctx):
-#     command = str(ctx.message.content).strip().split(maxsplit=1)[0]
-#     if command in ADMIN_COMMANDS:
-#         return ctx.author.id in ADMINS
-#     return True
+@bot.check
+def special_commands_only_for_admins(ctx):
+    command = str(ctx.message.content).strip().split(maxsplit=1)[0]
+    if command in ADMIN_COMMANDS:
+        return ctx.author.id in ADMINS
+    return True
 
 ################################### АДМИН КОМАНДЫ
 
@@ -337,9 +337,9 @@ async def on_ready():
 
 @bot.event
 async def on_message(msg):
-    # if msg.guild is not None and msg.content.startswith("!"):
-    #     await msg.delete()
-    #     return
+    if msg.guild is not None and msg.content.startswith("!"):
+        await msg.delete()
+        return
     await bot.process_commands(msg)
 
 @bot.event 

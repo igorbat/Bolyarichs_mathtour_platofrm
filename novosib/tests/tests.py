@@ -16,7 +16,7 @@ class CacheTest(unittest.TestCase):
         sol_c1 = SolutionCache(DB_NAME)
 
         sol_c1.new_solution('1', 'algebra', '1', '2.45')
-        sol_c1.new_solution('1', 'aetry', '1', '45')
+        sol_c1.new_solution('1', 'geometry', '1', '45')
         sol_c1.new_solution('2', 'combinatorics', '2', 'yes')
         sol_c1.new_solution('3', 'topology', '1', 'bibki')
         sol_c1.new_solution('2', 'algebra', '2', '2.718')
