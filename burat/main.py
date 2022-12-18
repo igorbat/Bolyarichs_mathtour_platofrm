@@ -1,6 +1,7 @@
 import sqlite3
 import discord
-from secret import TOKEN, ADMINS, ADMIN_CHANNEL, PUBLIC_CHANNEL, HI_CHANNEL
+import telebot
+from secret import TOKEN, TG_TOKEN, ADMINS, ADMIN_CHANNEL, PUBLIC_CHANNEL, HI_CHANNEL
 from discord.ext import commands
 
 from util import calculate_points, generate_html, generate_html_bonuses
@@ -17,6 +18,8 @@ def reset():
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='!', intents=intents)
+tg_bot = telebot.AsyncTeleBot(TG_TOKEN)
+
 
 solutions = SolutionCache()
 players = PlayerCache()
@@ -205,6 +208,19 @@ async def fio(ctx):
     ok, msg = players.set_fio(str(ctx.author.id), parts[0])
     print(msg)
     await ctx.send(msg)
+
+@tg_bot.message_handler(commands=["fio"])
+async def fio_TG(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    parts = ctx.message.content.strip().split(maxsplit=1)[1:]
+    if len(parts) == 0:
+        msg = "Недостаточно параметров"
+        print(msg)
+        await ctx.send(msg)
+        return
+    ok, msg = players.set_fio(str(ctx.author.id), parts[0])
+    print(msg)
+    await  bot.send_message(message.chat.id, msg)
 
 @bot.command(name='school', help='Зарегистрировать Школу')
 async def school(ctx):
