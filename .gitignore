@@ -131,6 +131,7 @@ dmypy.json
 # secretfile
 secret.py
 burat/secret.py
+burat/burat/*
 burat/tasks/*
 burat/data/*
 novosib/secret.py

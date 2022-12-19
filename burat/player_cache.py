@@ -39,7 +39,7 @@ class Player:
 class PlayerCache:
     def __init__(self, param_for_db=DB_NAME):
         self.db_name = param_for_db
-        self.conn = sqlite3.connect(self.db_name)
+        self.conn = sqlite3.connect(self.db_name, check_same_thread=False)
         self.players_storage = defaultdict(Player)
         
         cursor = self.conn.cursor()
