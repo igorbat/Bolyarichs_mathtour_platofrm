@@ -1,3 +1,4 @@
+from bot_head import father
 from discord_bot import discord_bot
 from tg_bot import tg_bot
 from secret import TOKEN
@@ -10,16 +11,17 @@ def run_ds():
 
 
 def run_tg():
-    try:
-        tg_bot.polling(none_stop=True, )
-    except Exception as e:
-        print(str(e))
+    while True:
+        try:
+            tg_bot.infinity_polling()
+        except Exception as e:
+            print(str(e))
 
 
 def main():
     ds_thr = threading.Thread(target=run_ds)
-    tg_thr = threading.Thread(target=run_tg)
     ds_thr.start()
+    tg_thr = threading.Thread(target=run_tg)
     tg_thr.start()
 
 

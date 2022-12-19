@@ -6,7 +6,7 @@ import sqlite3
 class SolutionCache:
     def __init__(self, param_for_db=DB_NAME):
         self.db_name = param_for_db
-        self.conn = sqlite3.connect(self.db_name)
+        self.conn = sqlite3.connect(self.db_name, check_same_thread=False)
         self.solution_storage = []
         
         cursor = self.conn.cursor()
