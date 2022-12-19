@@ -105,20 +105,20 @@ class PlayerCache:
             return False, "Анкета на рассмотрении", ""
         if self.players_storage[id].fio is None:
             return False, "Не сохранено ФИО", ""
-        # if self.players_storage[id].school is None:
-        #     return False, "Не сохранена школа", ""
-        # if self.players_storage[id].year is None:
-        #     return False, "Не сохранено класс обучения, например, 7", ""
-        # if self.players_storage[id].city is None:
-        #     return False, "Не сохранено населенный пункт", ""
-        # if self.players_storage[id].region is None:
-        #     return False, "Не сохранено регион", ""
-        # if self.players_storage[id].phone is None:
-        #     return False, "Не сохранено номер телефона", ""
-        # if self.players_storage[id].trainer is None:
-        #     return False, "Не сохранено ФИО Тренера(Учителя), должность и место работы ", ""
-        # if self.players_storage[id].tour is None:
-        #     return False, "Не сохранен выбранный турнир: pro или novice", ""    
+        if self.players_storage[id].school is None:
+            return False, "Не сохранена школа", ""
+        if self.players_storage[id].year is None:
+            return False, "Не сохранено класс обучения, например, 7", ""
+        if self.players_storage[id].city is None:
+            return False, "Не сохранено населенный пункт", ""
+        if self.players_storage[id].region is None:
+            return False, "Не сохранено регион", ""
+        if self.players_storage[id].phone is None:
+            return False, "Не сохранено номер телефона", ""
+        if self.players_storage[id].trainer is None:
+            return False, "Не сохранено ФИО Тренера(Учителя), должность и место работы ", ""
+        if self.players_storage[id].tour is None:
+            return False, "Не сохранен выбранный турнир: pro или novice", ""    
         self.players_storage[id].fixed = True
         return True, "Анкета отправлена", "НОВЫЙ УЧАСТНИК: id = {} \nФИО:{}\nШКОЛА:{}\nКЛАСС:{}\nГОРОД:{}\nРЕГИОН:{}\nТЕЛЕФОН:{}\nТРЕНЕР:{}\nТурнир:{}".format(
             id,
