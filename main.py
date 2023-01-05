@@ -7,8 +7,7 @@ from abaka.abaka_cls import *
 
 ADMIN_COMMANDS = ['!start', '!stop']
 
-client = discord.Client()
-bot = commands.Bot(command_prefix='!')
+bot = commands.Bot(command_prefix='!', intents=discord.Intents.default())
 
 
 # state_machine = StateMachine()
