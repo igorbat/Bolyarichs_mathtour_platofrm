@@ -3,6 +3,9 @@ from graphic_environment.conf import OUTLINE_WIDTH, INLINE_WIDTH, SMALLEST_STRIN
 from graphic_environment.conf import C_RED, C_GREEN, C_GREY
 from graphic_environment.conf import RED_TAGS, GREEN_TAGS, GREY_TAGS
 
+default_font = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+# default_font = 'times.ttf'
+
 class TableDrawer:
     # TODO remove do_results - bad code
     # TODO слишком много строк, разделить на подфункции
@@ -66,7 +69,7 @@ class TableDrawer:
         # endregion
 
         # region printing text
-        fnt = ImageFont.truetype('times.ttf', font_size)
+        fnt = ImageFont.truetype(default_font, font_size)
         start_pix = OUTLINE_WIDTH
         shift_x = 0
         shift_y = 0
@@ -82,7 +85,7 @@ class TableDrawer:
         TableDrawer.post_print(draw, font_size // 2, params, double_cells)
 
         if results is not None:
-            small_fnt = ImageFont.truetype('times.ttf', font_size // 3)
+            small_fnt = ImageFont.truetype(default_font, font_size // 3)
             l_x, t_y, r_x, b_y = TableDrawer.get_cell_corners(x_size - 1, y_size - 1, params)
             width, height = r_x - l_x, b_y - t_y
             small_seed = (l_x - 1 + width / 6, t_y - 1 + height / 6)
@@ -106,7 +109,7 @@ class TableDrawer:
     def post_print(draw, font_size, params, double_cells=None):
         if double_cells is None:
             return
-        fnt = ImageFont.truetype('times.ttf', font_size)
+        fnt = ImageFont.truetype(default_font, font_size)
         for d_cell in double_cells:
             c_x, c_y = d_cell[0], d_cell[1]
             word_bot, word_top = d_cell[2], d_cell[3]
@@ -134,14 +137,14 @@ class TableDrawer:
         # first array in params stands for x-size of cells, second for y-size
         # x and y are inverted because board is transposed to x-y basis
         params = [[], []]
-        fnt = ImageFont.truetype('times.ttf', font_size)
+        fnt = ImageFont.truetype(default_font, font_size)
         x_len = len(board)
         y_len = len(board[0])
 
         # d_cell = [x-coord, y-coord, bottom word, top word]
         double_matrix = [['' for i in range(y_len)] for j in range(x_len)]
         if double_cells is not None:
-            half_fnt = ImageFont.truetype('times.ttf', font_size // 2)
+            half_fnt = ImageFont.truetype(default_font, font_size // 2)
             for d_cell in double_cells:
                 c_x, c_y = d_cell[0], d_cell[1]
                 word_bot, word_top = d_cell[2], d_cell[3]
@@ -201,7 +204,7 @@ class TableDrawer:
             l_x, t_y, r_x, b_y = word_params[1]
             fnt_scale = word_params[2]
             anchor = word_params[3]
-            fnt = ImageFont.truetype('times.ttf', font_size / fnt_scale)
+            fnt = ImageFont.truetype(default_font, font_size / fnt_scale)
             box = fnt.getbbox(word)
 
     # default coloring - colors in green, red or gey and works only for int

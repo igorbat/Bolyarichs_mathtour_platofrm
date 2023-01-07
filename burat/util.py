@@ -68,29 +68,23 @@ def generate_html_bonuses(solutions, tasks, players):
     mapper = {
         "pro":
             {
-                "pro_div":0,
-                "pro_rabbit":1,
-                "pro_color":2,
-                "pro_text":3
+                "move1":0,
+                "alg1":1,
+                "chisl1":2,
             },
         "novice":
             {
-                "quest":0,
-                "text":1,
-                "math":2,
-                "chess":3,
-                "sudoku": 4,
-                "problem": 5,
-                "logic": 6
+                "num1":0,
+                "razn1":1,
+                "dir":2,
             }
     }
     uniq_bonuses = {
         "pro":
             {
-                "pro_div":0,
-                "pro_rabbit":0,
-                "pro_color":0,
-                "pro_text":0,
+                "move1":0,
+                "alg1":0,
+                "chisl1":0,
                 1:0,
                 2:0,
                 3:0,
@@ -99,13 +93,9 @@ def generate_html_bonuses(solutions, tasks, players):
             },
         "novice":
             {
-                "quest":0,
-                "text":0,
-                "math":0,
-                "chess":0,
-                "sudoku":0,
-                "problem":0,
-                "logic":0,
+                "num1":0,
+                "razn1":0,
+                "dir":0,
                 1:0,
                 2:0,
                 3:0,
