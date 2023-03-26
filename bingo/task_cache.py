@@ -111,5 +111,8 @@ class TaskCache:
         return (True, "все ок")
    
     def check_task(self, tour, theme, taskid, ans):
-        return self.tours[tour][theme].is_correct_ans(taskid=taskid, ans=ans)
+        if theme == "bonus" and tour == "pro" and taskid == "1":
+            return 11.85 < float(ans.replace(',', '.')) < 18.25
+        else:
+            return self.tours[tour][theme].is_correct_ans(taskid=taskid, ans=ans)
         

@@ -3,7 +3,7 @@ import discord
 from secret import TOKEN, ADMINS
 from discord.ext import commands
 
-from util import calculate_points, generate_html, generate_html_bonuses
+from util import calculate_points, generate_html
 from solution_cache import SolutionCache
 from player_cache import PlayerCache
 from task_cache import TaskCache
@@ -78,11 +78,11 @@ async def res_res_res(ctx):
     await ctx.send('Сгенерены html-ки')
 
 
-@bot.command(name='super_res', help='Сгенерировать табличку super-результатов')
-async def super_res(ctx):
-    print(ctx.author.id, ctx.author.name, ctx.message.content)
-    generate_html_bonuses(solutions, tasks, players)
-    await ctx.send('Сгенерены super-html-ки')
+# @bot.command(name='super_res', help='Сгенерировать табличку super-результатов')
+# async def super_res(ctx):
+#     print(ctx.author.id, ctx.author.name, ctx.message.content)
+#     generate_html_bonuses(solutions, tasks, players)
+#     await ctx.send('Сгенерены super-html-ки')
 ################################### ИГРОВОЙ ПРОЦЕСС
 @bot.command(name='solve', help='Отправить решение в виде "solve ТЕМА ЗАДАЧА ОТВЕТ"')
 async def solve(ctx):
@@ -104,15 +104,12 @@ async def solve(ctx):
         await ctx.send(msgg)
         return
     # проверить, что не было повторной посылки по той же задаче
-    theme_count = 0
+    solved_count = 0
     for sol in solutions.solution_storage:
-        if sol[0] == str(ctx.author.id) and sol[1] == parts[0]:
-            theme_count += 1
-    if theme_count + 1 > int(parts[1]):
-        await ctx.send("Вы уже отправляли данную задачу")
-        return
-    elif theme_count + 1 < int(parts[1]):
-        await ctx.send("Вы ещё не отправили прошлые задачи")
+        if sol[0] == str(ctx.author.id) and sol[1] == parts[0] and sol[2] == parts[1]:
+            solved_count += 1
+    if solved_count == 2:
+        await ctx.send("Вы уже отправляли данную задачу дважды")
         return
 
     ok, msg1 = solutions.new_solution(str(ctx.author.id), *parts)
