@@ -134,6 +134,8 @@ burat/secret.py
 burat/burat/*
 burat/tasks/*
 burat/data/*
+baseslav/secret.py
+bingo/secret.py
 novosib/secret.py
 novosib/tasks/*
 novosib/data/
