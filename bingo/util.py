@@ -4,7 +4,7 @@ from collections import defaultdict
 import codecs
 
 
-def calculate_points(player, tour, solution_cache: SolutionCache, tasks_cache: TaskCache):
+def res_calc(player, tour, solution_cache: SolutionCache, tasks_cache: TaskCache):
     # player <=> user_id
 
     to_tablee = {
@@ -32,7 +32,7 @@ def calculate_points(player, tour, solution_cache: SolutionCache, tasks_cache: T
                 if player_tablee[to_tablee[sol[1]]][int(sol[2]) - 1] == -1:
                     player_tablee[to_tablee[sol[1]]][int(sol[2]) - 1] = (tablee[to_tablee[sol[1]]][int(sol[2]) - 1] + 1) // 2
                     points += player_tablee[to_tablee[sol[1]]][int(sol[2]) - 1]
-                else:
+                elif player_tablee[to_tablee[sol[1]]][int(sol[2]) - 1] == 0:
                     player_tablee[to_tablee[sol[1]]][int(sol[2]) - 1] = tablee[to_tablee[sol[1]]][int(sol[2]) - 1]
                     points += player_tablee[to_tablee[sol[1]]][int(sol[2]) - 1]
             else:
@@ -55,8 +55,10 @@ def calculate_points(player, tour, solution_cache: SolutionCache, tasks_cache: T
                 flag = False
         if flag:
             points += 7
+    return points
 
-    return (True, f'Ваше число очков: {points}')
+def calculate_points(player, tour, solution_cache: SolutionCache, tasks_cache: TaskCache):
+    return (True, f'Ваше число очков: {res_calc(player, tour, solution_cache, tasks_cache)}')
 
 
 def generate_html(solutions, tasks, players):
@@ -75,7 +77,7 @@ def generate_html(solutions, tasks, players):
                 sols += 1
                 if tasks.check_task(tour, sol[1], sol[2], sol[3]):
                     corrects_sols += 1
-        results[tour].append([fio, calculate_points(playerr, tour, solution_cache=solutions, tasks_cache=tasks), corrects_sols, sols])
+        results[tour].append([fio, res_calc(playerr, tour, solution_cache=solutions, tasks_cache=tasks), corrects_sols, sols])
 
     for tour in results:
         sorted_res = sorted(results[tour], key=lambda x: -x[1])

@@ -39,8 +39,8 @@ def special_commands_only_for_admins(ctx):
 @bot.command(name='newtasks', help='загрузить новые задачи: Турнир Тема ответ1 ответ2 ...')
 async def newtasks(ctx):
     print(ctx.author.id, ctx.author.name, ctx.message.content)
-    parts = ctx.message.content.strip().split(maxsplit=7)[1:]
-    if len(parts) < 7:
+    parts = ctx.message.content.strip().split(maxsplit=6)[1:]
+    if len(parts) < 6:
         ok, msg = False, "Недостаточно параметров"
         print(msg)
         await ctx.send(msg)
