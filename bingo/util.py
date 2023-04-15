@@ -90,6 +90,32 @@ def generate_html(solutions, tasks, players):
             f.write("</body></html>")
 
 
+def generate_res(solutions, tasks, players):
+    results = defaultdict(list)
+    for playerr in players.players_storage:
+        player = players.players_storage[playerr]
+        if not player.allowed:
+            continue
+        tour = player.tour
+        fio = player.fio
+        fio = fio.replace('\n', ', ')
+        sols = 0
+        corrects_sols = 0
+        for sol in solutions.solution_storage:
+            if sol[0] == player.user_id:
+                sols += 1
+                if tasks.check_task(tour, sol[1], sol[2], sol[3]):
+                    corrects_sols += 1
+        results[tour].append([fio, res_calc(playerr, tour, solution_cache=solutions, tasks_cache=tasks), corrects_sols, sols])
+
+    res_msg = ''
+    for tour in results:
+        sorted_res = sorted(results[tour], key=lambda x: -x[1])
+        res_msg += '\n' + "очков задач посылок место название"
+        for _, mass in enumerate(sorted_res):
+            res_msg += '\n' + str(mass[1]).ljust(9, " ") + str(mass[2]).ljust(10, " ") +\
+                    str(mass[3]).ljust(12, " ") + str(_ + 1).ljust(6, " ") + mass[0]
+    return res_msg
 # def generate_html_bonuses(solutions, tasks, players):
 #     player_results = defaultdict(list)
 #     for playerr in players.players_storage:

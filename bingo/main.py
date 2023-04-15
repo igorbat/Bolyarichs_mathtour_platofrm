@@ -3,7 +3,7 @@ import discord
 from secret import TOKEN, ADMINS
 from discord.ext import commands
 
-from util import calculate_points, generate_html
+from util import calculate_points, generate_html, generate_res
 from solution_cache import SolutionCache
 from player_cache import PlayerCache
 from task_cache import TaskCache
@@ -17,9 +17,11 @@ solutions = SolutionCache()
 players = PlayerCache()
 tasks = TaskCache()
 
+global_is_started = False
+
 ADMIN_COMMANDS = ['!registered', '!banned', '!finish',
  '!newtasks', '!gettasks',
-  '!changetour', "!res_res_res", "!super_res"]
+  '!changetour', "!res_res_res", "!super_res", "!easy_res", "!start", "!stop"]
 
 @bot.check
 def dm_only(ctx):
@@ -34,6 +36,24 @@ def special_commands_only_for_admins(ctx):
     return True
 
 ################################### АДМИН КОМАНДЫ
+@bot.command(name='start', help='запустить турнир')
+async def small_start(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    global global_is_started
+    global_is_started = True
+    msg = "Турнир запущен"
+    print(msg)
+    await ctx.send(msg)
+
+@bot.command(name='stop', help='остановить турнир')
+async def small_stop(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    global global_is_started
+    global_is_started = False
+    msg = "Турнир остановлен"
+    print(msg)
+    await ctx.send(msg)
+
 
 
 @bot.command(name='newtasks', help='загрузить новые задачи: Турнир Тема ответ1 ответ2 ...')
@@ -77,6 +97,11 @@ async def res_res_res(ctx):
     generate_html(solutions, tasks, players)
     await ctx.send('Сгенерены html-ки')
 
+@bot.command(name='easy_res', help='Сгенерировать табличку результатов')
+async def res_res_res(ctx):
+    print(ctx.author.id, ctx.author.name, ctx.message.content)
+    msg = generate_res(solutions, tasks, players)
+    await ctx.send(msg)
 
 # @bot.command(name='super_res', help='Сгенерировать табличку super-результатов')
 # async def super_res(ctx):
@@ -86,10 +111,16 @@ async def res_res_res(ctx):
 ################################### ИГРОВОЙ ПРОЦЕСС
 @bot.command(name='solve', help='Отправить решение в виде "solve ТЕМА ЗАДАЧА ОТВЕТ"')
 async def solve(ctx):
+    global global_is_started
     print(ctx.author.id, ctx.author.name, ctx.message.content)
     parts = ctx.message.content.strip().split(maxsplit=3)[1:]
     if len(parts) < 3:
         msg = "Недостаточно параметров"
+        print(msg)
+        await ctx.send(msg)
+        return
+    if global_is_started == False:
+        msg = "Турнир не активен"
         print(msg)
         await ctx.send(msg)
         return

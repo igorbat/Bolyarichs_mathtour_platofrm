@@ -100,7 +100,7 @@ class TaskCache:
             return (False, "такого турнира нет")
         if theme not in self.tours[tour]:
             return (False, "такой темы в этом турнире нет")
-        if not (taskid >= "1" and taskid <= "5"):
+        if not (taskid == "1" or taskid == "2" or taskid == "3" or taskid == "4"):
             return (False, "некорректный номер задачи")
         return (True, "все ок")
    
