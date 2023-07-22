@@ -3,7 +3,6 @@ from secret import DB_NAME
 from collections import defaultdict
 import sqlite3
 
-# DB_NAME = "C:\\KovalenkoDB\\marathon.txt"
 
 class Task:
     def __init__(self):
@@ -119,4 +118,4 @@ class TaskCache:
         if num1 > num2:
             num1, num2 = num2, num1
         return self.tours[tour][(num1, num2)].is_correct_ans(ans=ans)
-        
+

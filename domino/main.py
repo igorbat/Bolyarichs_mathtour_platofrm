@@ -81,11 +81,7 @@ async def res_res_res(ctx):
     await ctx.send('Сгенерены html-ки')
 
 
-@bot.command(name='super_res', help='Сгенерировать табличку super-результатов')
-async def super_res(ctx):
-    print(ctx.author.id, ctx.author.name, ctx.message.content)
-    generate_html_bonuses(solutions, tasks, players)
-    await ctx.send('Сгенерены super-html-ки')
+
 ################################### ИГРОВОЙ ПРОЦЕСС
 @bot.command(name='solve', help='Отправить решение в виде "solve Число1 Число2 ОТВЕТ"')
 async def solve(ctx):
@@ -143,21 +139,6 @@ async def points(ctx):
     print(msg)
     await ctx.send(msg)
 
-################################### Анкетные приколы
-
-# @bot.command(name='register', help='зарегистрировать команду: школа, класс или целиком название')
-# async def register(ctx):
-#     print(ctx.author.id, ctx.author.name, ctx.message.content)
-#     parts = str(ctx.message.content).strip().split(maxsplit=1)
-#     if len(parts) < 2:
-#         msg = "Недостаточно аргументов. Нужно написать школу класс"
-#         print(msg)
-#         await ctx.send(msg)
-#     else:
-#         team_name = state_machine.register_player(ctx.author.id, parts[1])
-#         msg = "Ваша команда: {}".format(team_name)
-#         print(msg)
-#         await ctx.send(msg)
 
 @bot.command(name='fio', help='Зарегистрировать ФИО')
 async def fio(ctx):

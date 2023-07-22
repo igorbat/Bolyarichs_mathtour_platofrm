@@ -10,7 +10,6 @@ class SolutionCache:
         self.solution_storage = []
         
         cursor = self.conn.cursor()
-        # cursor.execute("DROP TABLE solutions;")
         cursor.execute("CREATE TABLE IF NOT EXISTS solutions(user_id TEXT, name TEXT, answer TEXT, timee INT);")
         self.conn.commit()
 
@@ -36,3 +35,4 @@ class SolutionCache:
             if sol[0] == user_id:
                 ans += 1
         return (True, ans)
+
